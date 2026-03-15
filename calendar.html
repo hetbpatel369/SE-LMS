@@ -76,19 +76,10 @@
     </div>
   </div></footer>
 
+  <script src="js/demo-data.js"></script>
   <script src="js/app.js"></script>
   <script>
-    // Calendar events (keyed by YYYY-MM-DD)
-    const EVENTS = {
-      '2026-03-18': [{ title: 'Math Assignment Due', type: 'assignment', time: '11:59 PM' }],
-      '2026-03-20': [{ title: 'Biology Quiz', type: 'quiz', time: '9:00 AM' }],
-      '2026-03-22': [{ title: 'English Essay Submission', type: 'assignment', time: '11:59 PM' }],
-      '2026-03-25': [{ title: 'CS Live Class – Zoom', type: 'class', time: '11:00 AM' }],
-      '2026-03-28': [{ title: 'Physics Midterm Exam', type: 'exam', time: '10:00 AM' }],
-      '2026-04-02': [{ title: 'History Report Due', type: 'assignment', time: '5:00 PM' }],
-      '2026-04-05': [{ title: 'Math Quiz', type: 'quiz', time: '10:00 AM' }],
-      '2026-04-10': [{ title: 'Science Fair Deadline', type: 'assignment', time: '12:00 PM' }],
-    };
+    // Calendar events (loaded from demo-data.js via LMS_EVENTS_MAP)
 
     const typeColors = { assignment: '#4f46e5', quiz: '#d97706', exam: '#dc2626', class: '#0891b2' };
 
@@ -113,7 +104,7 @@
 
       for (let day = 1; day <= daysInMonth; day++) {
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        const hasEvent = EVENTS[dateStr];
+        const hasEvent = LMS_EVENTS_MAP[dateStr];
         const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
         const eventColor = hasEvent ? typeColors[hasEvent[0].type] : '';
 
@@ -128,13 +119,13 @@
 
     function renderEvents() {
       const list = document.getElementById('events-list');
-      const sortedDates = Object.keys(EVENTS).sort();
+      const sortedDates = Object.keys(LMS_EVENTS_MAP).sort();
       const today = new Date().toISOString().split('T')[0];
 
       const upcoming = sortedDates.filter(d => d >= '2026-03-15');
 
       list.innerHTML = upcoming.slice(0, 6).map(date => {
-        const evts = EVENTS[date];
+        const evts = LMS_EVENTS_MAP[date];
         return evts.map(e => `
           <div class="event-item" style="border-left-color:${typeColors[e.type]};">
             <span class="event-date">${new Date(date + 'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span>
@@ -146,7 +137,7 @@
     }
 
     function showDayEvents(dateStr) {
-      const evts = EVENTS[dateStr];
+      const evts = LMS_EVENTS_MAP[dateStr];
       if (evts) {
         const day = new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
         showToast(`${day}: ${evts.map(e => e.title).join(', ')}`, 'info', 4000);
