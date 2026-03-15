@@ -29,6 +29,21 @@ const ADMIN_ACTIVITY = [
   { text: 'Grade posted: Biology Lab Report by Dr. Patel', time: '1 day ago' },
 ];
 
+const ADMIN_REVENUE = [
+  { id: 'TRX-101', student: 'John Doe', amount: 50.00, date: '2026-03-15', status: 'completed' },
+  { id: 'TRX-102', student: 'Sarah Kim', amount: 55.00, date: '2026-03-14', status: 'completed' },
+  { id: 'TRX-103', student: 'Robert Jane', amount: 40.00, date: '2026-03-13', status: 'completed' },
+  { id: 'TRX-104', student: 'Alice Chen', amount: 60.00, date: '2026-03-12', status: 'completed' },
+  { id: 'TRX-105', student: 'Frank Taylor', amount: 50.00, date: '2026-03-11', status: 'pending' },
+];
+
+const ADMIN_ENROLLMENTS = [
+  { course: 'Mathematics 101', category: 'Sciences', professor: 'Dr. Smith', students: 45, capacity: 50 },
+  { course: 'English Literature', category: 'Humanities', professor: 'Ms. Johnson', students: 38, capacity: 40 },
+  { course: 'Physics Advanced', category: 'Sciences', professor: 'Dr. Garcia', students: 28, capacity: 30 },
+  { course: 'Intro to Art', category: 'Electives', professor: 'Mr. Davis', students: 25, capacity: 35 },
+];
+
 document.addEventListener('DOMContentLoaded', () => {
   const user = getCurrentUser();
   if (!user || user.role !== 'admin') {
@@ -36,14 +51,20 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  document.getElementById('admin-name').textContent = user.name;
-  document.getElementById('admin-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const adminNameEl = document.getElementById('admin-name');
+  if (adminNameEl) adminNameEl.textContent = user.name;
 
-  if (window.innerWidth <= 1024) document.getElementById('sidebar-toggle').style.display = 'flex';
+  const adminDateEl = document.getElementById('admin-date');
+  if (adminDateEl) adminDateEl.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+  const sidebarToggle = document.getElementById('sidebar-toggle');
+  if (sidebarToggle && window.innerWidth <= 1024) sidebarToggle.style.display = 'flex';
 
   renderApprovals();
   renderAdminActivity();
   renderAllUsers();
+  renderRevenue();
+  renderEnrollments();
 
   // Search & filter
   document.getElementById('user-search').addEventListener('input', renderAllUsers);
@@ -134,6 +155,42 @@ function renderAllUsers() {
       <td><span class="badge badge-${u.role === 'professor' ? 'warning' : u.role === 'parent' ? 'success' : 'primary'}">${u.role}</span></td>
       <td><span class="badge badge-success">Active</span></td>
       <td>${formatDate(u.joined)}</td>
+    </tr>
+  `).join('');
+}
+
+function renderRevenue() {
+  const tbody = document.getElementById('revenue-table');
+  if (!tbody) return;
+
+  tbody.innerHTML = ADMIN_REVENUE.map(r => `
+    <tr>
+      <td><strong>${r.id}</strong></td>
+      <td>${r.student}</td>
+      <td><span style="color:#4ade80; font-weight:600;">$${r.amount.toFixed(2)}</span></td>
+      <td>${formatDate(r.date)}</td>
+      <td><span class="badge ${r.status === 'completed' ? 'badge-success' : 'badge-warning'}">${r.status}</span></td>
+    </tr>
+  `).join('');
+}
+
+function renderEnrollments() {
+  const tbody = document.getElementById('enrollments-table');
+  if (!tbody) return;
+
+  tbody.innerHTML = ADMIN_ENROLLMENTS.map(c => `
+    <tr>
+      <td><strong>${c.course}</strong><br><small style="color:var(--text-muted);">${c.category}</small></td>
+      <td>${c.professor}</td>
+      <td>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div class="progress-bar" style="flex:1;">
+            <div class="progress-fill" style="width: ${(c.students / c.capacity) * 100}%;"></div>
+          </div>
+          <span style="font-size:0.75rem;">${c.students} / ${c.capacity}</span>
+        </div>
+      </td>
+      <td><span class="badge ${c.students >= c.capacity ? 'badge-danger' : 'badge-success'}">${c.students >= c.capacity ? 'Full' : 'Open'}</span></td>
     </tr>
   `).join('');
 }

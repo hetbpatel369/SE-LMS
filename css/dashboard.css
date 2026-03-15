@@ -28,6 +28,95 @@
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: var(--space-md);
   margin-bottom: var(--space-xl);
+  position: relative;
+  z-index: 10;
+}
+
+.stat-card.has-dropdown {
+  position: relative;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.stat-card.has-dropdown:hover {
+  z-index: 50;
+}
+
+.stat-card .stat-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 100%;
+  width: max-content;
+  max-width: 280px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  transition: all var(--transition-fast);
+  padding: var(--space-sm) 0;
+  cursor: default;
+}
+
+.stat-card.has-dropdown:hover .stat-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(8px);
+}
+
+/* Ensure rightmost dropdowns don't push off screen */
+.stat-card.has-dropdown:last-child .stat-dropdown {
+  left: auto;
+  right: 0;
+}
+
+.stat-dropdown-title {
+  padding: 0 var(--space-md) var(--space-xs);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: var(--space-xs);
+  white-space: nowrap;
+}
+
+.stat-dropdown-item {
+  padding: var(--space-xs) var(--space-md);
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  transition: background var(--transition-fast);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.stat-dropdown-item:hover {
+  background: var(--primary-glow);
+  color: var(--text-primary);
+}
+
+.stat-dropdown-item.more-link {
+  color: var(--primary);
+  font-size: 0.75rem;
+  justify-content: center;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  padding-bottom: 0;
+}
+
+.stat-dropdown-item.more-link:hover {
+  background: none;
+  text-decoration: underline;
 }
 
 /* ---------- Dashboard Sections ---------- */
@@ -387,6 +476,34 @@
   background: var(--bg-card);
   border-bottom: 1px solid var(--border);
   z-index: 990;
+}
+
+.course-nav-links {
+  display: flex;
+  gap: var(--space-lg);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.course-nav-links::-webkit-scrollbar { display: none; }
+
+.course-nav-links a {
+  padding: 14px 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.course-nav-links a:hover {
+  color: var(--primary);
+}
+
+.course-nav-links a.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
 }
 
 .dashboard-grid-algoma {
