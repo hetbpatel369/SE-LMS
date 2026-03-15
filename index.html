@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Welcome to the LMS – Access online courses, submit assignments, and track your academic progress.">
+  <title>LMS – Learning Management System</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ===== Navbar ===== -->
+  <nav class="navbar" id="main-nav">
+    <div class="container flex-between">
+      <a href="index.html" class="nav-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        LMS
+      </a>
+      <div class="nav-links" id="nav-links">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div class="nav-actions">
+        <button class="theme-toggle" aria-label="Toggle theme">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+        <div id="nav-auth">
+          <a href="login.html" class="btn btn-sm btn-secondary">Log In</a>
+          <a href="login.html" class="btn btn-sm btn-primary">Sign Up</a>
+        </div>
+        <button class="nav-toggle" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== Hero ===== -->
+  <main class="page-wrapper">
+    <section class="hero">
+      <div class="hero-glow"></div>
+      <div class="hero-glow-2"></div>
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-eyebrow animate-up animate-up-1">
+            <span class="eyebrow-dot"></span>
+            <span>For Grades 9 – 12</span>
+          </div>
+          <h1 class="hero-title animate-up animate-up-2">
+            Your campus,<br><em class="serif-italic" style="color: var(--primary);">everywhere.</em>
+          </h1>
+          <p class="hero-subtitle animate-up animate-up-3">
+            Access courses, submit work, join live classes, and track your progress — a complete academic platform that travels with you.
+          </p>
+          <div class="hero-actions animate-up animate-up-4">
+            <a href="courses.html" class="btn btn-primary btn-lg">Browse Courses</a>
+            <a href="login.html" class="btn btn-secondary btn-lg">Create Account →</a>
+          </div>
+        </div>
+
+        <!-- Bento Grid -->
+        <div class="bento-grid">
+          <div class="bento-item bento-lg animate-up animate-up-3" id="bento-courses">
+            <div class="bento-icon">📘</div>
+            <h3>Courses</h3>
+            <p>Explore the full catalog — math, science, literature, technology, and more.</p>
+            <a href="courses.html" class="bento-link">Browse →</a>
+          </div>
+          <div class="bento-item animate-up animate-up-4" id="bento-calendar">
+            <div class="bento-icon">📅</div>
+            <h3>Calendar</h3>
+            <p>Deadlines, quizzes, and live classes at a glance.</p>
+            <a href="calendar.html" class="bento-link">View →</a>
+          </div>
+          <div class="bento-item animate-up animate-up-5" id="bento-messages">
+            <div class="bento-icon">💬</div>
+            <h3>Messages</h3>
+            <p>Chat with professors and classmates directly.</p>
+            <a href="messages.html" class="bento-link">Open →</a>
+          </div>
+          <div class="bento-item animate-up animate-up-4" id="bento-progress">
+            <div class="bento-icon">📊</div>
+            <h3>Progress</h3>
+            <p>Track grades, GPA, and course completion in real time.</p>
+            <a href="login.html" class="bento-link">Dashboard →</a>
+          </div>
+          <div class="bento-item bento-wide animate-up animate-up-5" id="bento-live">
+            <div class="bento-icon">🎥</div>
+            <h3>Live Classes</h3>
+            <p>Join integrated Zoom sessions without leaving the platform. Recorded for later review.</p>
+            <a href="courses.html" class="bento-link">Learn more →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Featured Courses ===== -->
+    <section class="section">
+      <div class="container">
+        <div class="section-header animate-up">
+          <div>
+            <span class="section-label">Catalog</span>
+            <h2>Featured Courses</h2>
+          </div>
+          <a href="courses.html" class="btn btn-sm btn-secondary">View All →</a>
+        </div>
+        <div class="grid-3 course-grid" id="featured-courses"></div>
+      </div>
+    </section>
+
+    <!-- ===== Stats Ribbon ===== -->
+    <section class="stats-ribbon">
+      <div class="container">
+        <div class="stats-ribbon-inner">
+          <div class="ribbon-stat">
+            <span class="ribbon-number">250+</span>
+            <span class="ribbon-label">Active Students</span>
+          </div>
+          <div class="ribbon-divider"></div>
+          <div class="ribbon-stat">
+            <span class="ribbon-number">20+</span>
+            <span class="ribbon-label">Courses</span>
+          </div>
+          <div class="ribbon-divider"></div>
+          <div class="ribbon-stat">
+            <span class="ribbon-number">15</span>
+            <span class="ribbon-label">Professors</span>
+          </div>
+          <div class="ribbon-divider"></div>
+          <div class="ribbon-stat">
+            <span class="ribbon-number">95%</span>
+            <span class="ribbon-label">Completion Rate</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="nav-logo" style="color: var(--text-primary);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:24px;height:24px;color:var(--primary);"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            LMS
+          </a>
+          <p>Empowering high school students with modern online learning tools.</p>
+        </div>
+        <div>
+          <h4 class="footer-heading">Platform</h4>
+          <ul class="footer-links">
+            
+            
+            
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-heading">Company</h4>
+          <ul class="footer-links">
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-heading">Contact</h4>
+          <ul class="footer-links">
+            <li><a href="mailto:support@lms.edu">support@lms.edu</a></li>
+            <li><a href="tel:+11234567890">+1 (123) 456-7890</a></li>
+            <li>123 Education St, Toronto</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 LMS. All rights reserved.</span>
+        <div>
+          <a href="privacy.html" style="color: var(--text-muted);">Privacy</a> ·
+          <a href="about.html" style="color: var(--text-muted);">About</a> ·
+          <a href="contact.html" style="color: var(--text-muted);">Contact</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const user = getCurrentUser();
+      if (user) {
+        let dashLink = 'student-dash.html';
+        if (user.role === 'admin') dashLink = 'admin-dash.html';
+        else if (user.role === 'professor') dashLink = 'professor-dash.html';
+        else if (user.role === 'parent') dashLink = 'parent-dash.html';
+        window.location.href = dashLink;
+      }
+    });
+
+    const featuredCourses = [
+      { id: 1, title: 'Mathematics 101', instructor: 'Dr. Smith', price: 50, category: 'Math', students: 45 },
+      { id: 2, title: 'English Literature', instructor: 'Ms. Johnson', price: 40, category: 'English', students: 38 },
+      { id: 3, title: 'Biology Basics', instructor: 'Dr. Patel', price: 55, category: 'Science', students: 52 },
+      { id: 4, title: 'World History', instructor: 'Mr. Brown', price: 35, category: 'History', students: 30 },
+      { id: 5, title: 'Computer Science', instructor: 'Ms. Lee', price: 60, category: 'Technology', students: 61 },
+      { id: 6, title: 'Physics Advanced', instructor: 'Dr. Garcia', price: 50, category: 'Science', students: 28 },
+    ];
+
+    function renderFeaturedCourses() {
+      const grid = document.getElementById('featured-courses');
+      if (!grid) return;
+      grid.innerHTML = featuredCourses.map((c, i) => `
+        <a href="courses.html?id=${c.id}" class="card course-card animate-up animate-up-${(i % 3) + 2}" style="text-decoration:none;">
+          <div class="course-card-top">
+            <span class="badge badge-primary">${c.category}</span>
+            <span style="font-size:0.78rem;color:var(--text-muted);">${c.students} students</span>
+          </div>
+          <h3 class="course-card-title">${c.title}</h3>
+          <p class="course-card-instructor">${c.instructor}</p>
+          <div class="card-footer" style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:var(--primary);">$${c.price}</span>
+            <span class="btn btn-sm btn-primary">Enroll</span>
+          </div>
+        </a>
+      `).join('');
+    }
+
+    renderFeaturedCourses();
+  </script>
+
+  <style>
+    /* ===== Home Page Specific Styles ===== */
+
+    /* Hero */
+    .hero {
+      padding: var(--space-3xl) 0 var(--space-2xl);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-glow {
+      position: absolute;
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 400px;
+      background: radial-gradient(ellipse, rgba(245, 158, 11, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-glow-2 {
+      position: absolute;
+      bottom: -80px;
+      right: -100px;
+      width: 400px;
+      height: 300px;
+      background: radial-gradient(ellipse, rgba(34, 211, 238, 0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      text-align: center;
+      max-width: 680px;
+      margin: 0 auto var(--space-3xl);
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 6px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: var(--space-lg);
+    }
+
+    .eyebrow-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--primary);
+      animation: pulseGlow 2s ease-in-out infinite;
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 4rem;
+      font-weight: 700;
+      margin-bottom: var(--space-lg);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+
+    .hero-subtitle {
+      font-size: 1.05rem;
+      max-width: 520px;
+      margin: 0 auto var(--space-xl);
+      color: var(--text-secondary);
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: var(--space-md);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* Bento Grid */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-auto-rows: auto;
+      gap: var(--space-md);
+      position: relative;
+      z-index: 1;
+    }
+
+    .bento-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      transition: all var(--transition-normal);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bento-item::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--primary-glow), transparent 50%);
+      opacity: 0;
+      transition: opacity var(--transition-normal);
+      pointer-events: none;
+    }
+
+    .bento-item:hover {
+      border-color: rgba(245, 158, 11, 0.2);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .bento-item:hover::after { opacity: 1; }
+
+    .bento-lg {
+      grid-row: span 2;
+    }
+
+    .bento-wide {
+      grid-column: span 2;
+    }
+
+    .bento-icon {
+      font-size: 2rem;
+      margin-bottom: var(--space-md);
+      position: relative;
+      z-index: 1;
+    }
+
+    .bento-item h3 {
+      font-size: 1.3rem;
+      margin-bottom: var(--space-sm);
+      position: relative;
+      z-index: 1;
+    }
+
+    .bento-item p {
+      font-size: 0.85rem;
+      margin-bottom: var(--space-md);
+      position: relative;
+      z-index: 1;
+    }
+
+    .bento-link {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--primary);
+      position: relative;
+      z-index: 1;
+      transition: letter-spacing var(--transition-normal);
+    }
+
+    .bento-item:hover .bento-link {
+      letter-spacing: 0.12em;
+    }
+
+    /* Section Header */
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: var(--space-xl);
+      gap: var(--space-md);
+    }
+
+    .section-label {
+      display: block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--primary);
+      margin-bottom: var(--space-xs);
+    }
+
+    /* Course Card */
+    .course-card {
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .course-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-md);
+    }
+
+    .course-card-title {
+      font-size: 1.3rem;
+      margin-bottom: var(--space-xs);
+      color: var(--text-primary);
+    }
+
+    .course-card-instructor {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: auto;
+    }
+
+    /* Stats Ribbon */
+    .stats-ribbon {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-card);
+      padding: var(--space-2xl) 0;
+    }
+
+    .stats-ribbon-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2xl);
+    }
+
+    .ribbon-stat {
+      text-align: center;
+    }
+
+    .ribbon-number {
+      display: block;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .ribbon-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    .ribbon-divider {
+      width: 1px;
+      height: 50px;
+      background: var(--border);
+    }
+
+    @media (max-width: 768px) {
+      .hero-title { font-size: 2.6rem; }
+      .bento-grid { grid-template-columns: 1fr; }
+      .bento-lg { grid-row: auto; }
+      .bento-wide { grid-column: auto; }
+      .stats-ribbon-inner {
+        flex-wrap: wrap;
+        gap: var(--space-xl);
+      }
+      .ribbon-divider { display: none; }
+    }
+  </style>
+</body>
+</html>

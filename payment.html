@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment – LMS</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+  <nav class="navbar"><div class="container flex-between">
+    <a href="index.html" class="nav-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> LMS</a>
+    <div class="nav-links"><a href="index.html">Home</a><a href="about.html">About</a><a href="contact.html">Contact</a></div>
+    <div class="nav-actions">
+      <button class="theme-toggle" aria-label="Toggle theme"><svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
+      <div id="nav-auth"><a href="login.html" class="btn btn-sm btn-secondary">Log In</a><a href="login.html" class="btn btn-sm btn-primary">Sign Up</a></div>
+      <button class="nav-toggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    </div>
+  </div></nav>
+
+  <main class="page-wrapper">
+    <div class="container" style="max-width: 800px;">
+      <div style="text-align:center;margin-bottom:var(--space-2xl);" class="animate-up">
+        <h1 style="font-size: 3.5rem;">Confirm <em class="serif-italic" style="color:var(--primary);">Payment</em></h1>
+      </div>
+
+      <div class="grid-2 animate-up animate-up-1" style="gap:var(--space-xl);align-items:start;">
+        <!-- Payment Form -->
+        <div class="card" style="padding:var(--space-xl);">
+          <h3 style="margin-bottom:var(--space-lg);">Payment Details</h3>
+
+          <!-- Payment Methods -->
+          <div class="payment-methods">
+            <button class="payment-method-btn active" onclick="selectPayment(this,'card')">
+              💳 Credit/Debit
+            </button>
+            <button class="payment-method-btn" onclick="selectPayment(this,'paypal')">
+              🅿️ PayPal
+            </button>
+          </div>
+
+          <!-- Card Form -->
+          <form id="payment-form">
+            <div id="card-fields">
+              <div class="form-group">
+                <label class="form-label" for="card-name">Full Name</label>
+                <input type="text" class="form-input" id="card-name" placeholder="Name on card" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="card-number">Card Number</label>
+                <input type="text" class="form-input" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" required>
+              </div>
+              <div class="grid-2" style="gap:var(--space-md);">
+                <div class="form-group">
+                  <label class="form-label" for="card-expiry">Expiry</label>
+                  <input type="text" class="form-input" id="card-expiry" placeholder="MM/YY" maxlength="5" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="card-cvv">CVV</label>
+                  <input type="text" class="form-input" id="card-cvv" placeholder="123" maxlength="4" required>
+                </div>
+              </div>
+            </div>
+
+            <div id="paypal-fields" style="display:none;text-align:center;padding:var(--space-xl);">
+              <p style="font-size:0.9rem;margin-bottom:var(--space-md);">You will be redirected to PayPal to complete the payment.</p>
+              <div style="font-size:3rem;">🅿️</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg" style="width:100%;margin-top:var(--space-lg);" id="pay-btn">
+              Pay $50.00
+            </button>
+          </form>
+        </div>
+
+        <!-- Order Summary -->
+        <div>
+          <div class="payment-summary">
+            <h3 style="margin-bottom:var(--space-lg);">Order Summary</h3>
+            <div class="payment-line">
+              <span id="summary-course">Mathematics 101</span>
+              <span id="summary-price">$50.00</span>
+            </div>
+            <div class="payment-line">
+              <span>Instructor</span>
+              <span id="summary-instructor">Dr. Smith</span>
+            </div>
+            <div class="payment-line">
+              <span>Tax</span>
+              <span>$0.00</span>
+            </div>
+            <div class="payment-total">
+              <span>Total</span>
+              <span id="summary-total">$50.00</span>
+            </div>
+          </div>
+
+          <div class="card" style="padding:var(--space-md);margin-top:var(--space-md);">
+            <div style="display:flex;align-items:center;gap:var(--space-sm);font-size:0.85rem;color:var(--text-muted);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Payments are securely processed. Your information is encrypted.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer"><div class="container">
+    <div class="footer-bottom" style="padding-top:0;border-top:none;">
+      <span>&copy; 2026 LMS. All rights reserved.</span>
+      <div><a href="contact.html" style="color:var(--text-on-footer);">Contact</a> &middot; <a href="privacy.html" style="color:var(--text-on-footer);">Privacy</a></div>
+    </div>
+  </div></footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    const COURSES_DATA = {
+      1: { title: 'Mathematics 101', instructor: 'Dr. Smith', price: 50 },
+      2: { title: 'English Literature', instructor: 'Ms. Johnson', price: 40 },
+      3: { title: 'Biology Basics', instructor: 'Dr. Patel', price: 55 },
+      4: { title: 'World History', instructor: 'Mr. Brown', price: 35 },
+      5: { title: 'Computer Science', instructor: 'Ms. Lee', price: 60 },
+      6: { title: 'Physics Advanced', instructor: 'Dr. Garcia', price: 50 },
+    };
+
+    let selectedMethod = 'card';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load course from URL
+      const params = new URLSearchParams(window.location.search);
+      const courseId = params.get('course');
+      const course = COURSES_DATA[courseId] || COURSES_DATA[1];
+
+      document.getElementById('summary-course').textContent = course.title;
+      document.getElementById('summary-price').textContent = `$${course.price}.00`;
+      document.getElementById('summary-instructor').textContent = course.instructor;
+      document.getElementById('summary-total').textContent = `$${course.price}.00`;
+      document.getElementById('pay-btn').textContent = `Pay $${course.price}.00`;
+
+      // Card number formatting
+      const cardNumberInput = document.getElementById('card-number');
+      cardNumberInput.addEventListener('input', (e) => {
+        let val = e.target.value.replace(/\D/g, '');
+        val = val.replace(/(.{4})/g, '$1 ').trim();
+        e.target.value = val;
+      });
+
+      // Expiry formatting
+      const expiryInput = document.getElementById('card-expiry');
+      expiryInput.addEventListener('input', (e) => {
+        let val = e.target.value.replace(/\D/g, '');
+        if (val.length >= 2) val = val.slice(0, 2) + '/' + val.slice(2, 4);
+        e.target.value = val;
+      });
+
+      // Submit
+      document.getElementById('payment-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('pay-btn');
+        btn.disabled = true;
+        btn.textContent = 'Processing...';
+
+        setTimeout(() => {
+          showToast('Payment successful! You are now enrolled.', 'success', 5000);
+          btn.textContent = '✓ Payment Complete';
+          btn.style.background = 'linear-gradient(135deg, #16a34a, #059669)';
+        }, 2000);
+      });
+    });
+
+    function selectPayment(btn, method) {
+      selectedMethod = method;
+      document.querySelectorAll('.payment-method-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      document.getElementById('card-fields').style.display = method === 'card' ? 'block' : 'none';
+      document.getElementById('paypal-fields').style.display = method === 'paypal' ? 'block' : 'none';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Dashboard – LMS</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+  <!-- Navbar (Global) -->
+  <nav class="navbar"><div class="container flex-between">
+    <a href="index.html" class="nav-logo" id="course-hub-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> 
+      <span id="nav-course-code">LMS</span>
+    </a>
+    <div class="nav-actions">
+      <button class="theme-toggle" aria-label="Toggle theme"><svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
+      <button onclick="logout()" class="btn btn-sm btn-outline" style="border-color:#ef4444;color:#ef4444;">Logout</button>
+    </div>
+  </div></nav>
+
+  <!-- Secondary Course Navbar -->
+  <div class="course-navbar animate-up">
+    <div class="container">
+      <nav class="course-nav-links">
+        <a href="#" class="active">Course Home</a>
+        <a href="#">Content</a>
+        <a href="#">Grades</a>
+        <a href="#">Communication</a>
+        <a href="#">Assessments</a>
+      </nav>
+    </div>
+  </div>
+
+  <main class="page-wrapper" style="padding-top: calc(var(--nav-height) + 40px); padding-bottom: var(--space-3xl);">
+    
+    <!-- Hero Banner -->
+    <div class="container animate-up animate-up-1">
+      <div class="course-hero">
+        <div class="course-hero-overlay"></div>
+        <div class="course-hero-content">
+          <h1 id="hero-course-title">Loading Course...</h1>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 Column Layout -->
+    <div class="container" style="margin-top: var(--space-xl);">
+      <div class="course-grid-layout">
+        
+        <!-- Main Column (Left, ~65%) -->
+        <div class="course-main-col">
+          
+          <!-- Updates Widget -->
+          <div class="card animate-up animate-up-2" style="margin-bottom: var(--space-lg);">
+            <div class="card-header" style="border-bottom: 1px solid var(--border); padding-bottom: var(--space-md);">
+              <h3 style="font-size:1rem; font-family:'Lexend',sans-serif;">Updates <span style="font-size:0.7rem;color:var(--text-muted);">▼</span></h3>
+            </div>
+            <div style="padding-top: var(--space-md);">
+              <a href="#" style="display:flex; align-items:center; gap:var(--space-sm); color:var(--primary); font-weight:600; font-size:0.9rem;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                1 Unread Discussion Post
+              </a>
+            </div>
+          </div>
+
+          <!-- Announcements Widget -->
+          <div class="card animate-up animate-up-3">
+            <div class="card-header" style="border-bottom: 1px solid var(--border); padding-bottom: var(--space-md);">
+              <h3 style="font-size:1rem; font-family:'Lexend',sans-serif;">Announcements <span style="font-size:0.7rem;color:var(--text-muted);">▼</span></h3>
+            </div>
+            
+            <div id="course-announcements-list" style="padding-top: var(--space-md);">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Sidebar Column (Right, ~35%) -->
+        <div class="course-side-col">
+          
+          <!-- Instructor Profile -->
+          <div class="card animate-up animate-up-2 instructor-card" style="padding:0; overflow:hidden; margin-bottom: var(--space-lg);">
+            <div class="card-header" style="padding: var(--space-md) var(--space-lg); border-bottom: 1px solid var(--border); margin:0;">
+              <h3 style="font-size:1rem; font-family:'Lexend',sans-serif;">Instructor Profile <span style="font-size:0.7rem;color:var(--text-muted);">▼</span></h3>
+            </div>
+            <div class="instructor-banner"></div>
+            <div style="padding: 0 var(--space-lg) var(--space-lg); text-align:center; position:relative; top:-40px;">
+              <div class="instructor-avatar-large" id="instructor-avatar">?</div>
+              <h2 id="instructor-name" style="margin-top:var(--space-sm); font-size:1.4rem;">Instructor Name</h2>
+              
+              <div style="text-align:left; margin-top:var(--space-md);">
+                <h4 style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted); margin-bottom:var(--space-xs);">About Me</h4>
+                <p id="instructor-bio" style="font-size:0.85rem; color:var(--text-secondary);">
+                  Please enter information about yourself here. You can include details such as office hours, contact information, etc.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Calendar Widget -->
+          <div class="card animate-up animate-up-3" style="padding:0;">
+            <div class="card-header" style="padding: var(--space-md) var(--space-lg); border-bottom: 1px solid var(--border); margin:0;">
+              <h3 style="font-size:1rem; font-family:'Lexend',sans-serif;">Calendar <span style="font-size:0.7rem;color:var(--text-muted);">▼</span></h3>
+            </div>
+            <div style="padding: var(--space-md) var(--space-lg);">
+              <div class="form-input" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-md); cursor:pointer;">
+                <span id="course-calendar-date" style="font-weight:600; font-size:0.85rem;">Today</span>
+                <span>▶</span>
+              </div>
+              <div style="border: 1px solid var(--border); border-radius: var(--radius-sm); padding:var(--space-md);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-sm); cursor:pointer;">
+                  <span style="font-size:0.85rem; font-weight:600;">Upcoming events</span>
+                  <span style="font-size:0.7rem; color:var(--text-muted);">▼</span>
+                </div>
+                <div style="border:1px solid var(--border); border-radius:var(--radius-sm); padding:var(--space-lg); text-align:center;">
+                  <p style="font-size:0.8rem; color:var(--text-muted); margin:0;">There are no events to display.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/course.js"></script>
+
+  <style>
+    /* Course Dashboard Specific Styles */
+    .course-navbar {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      position: fixed;
+      top: var(--nav-height);
+      left: 0;
+      right: 0;
+      z-index: 990;
+    }
+
+    .course-nav-links {
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    
+    .course-nav-links::-webkit-scrollbar { display: none; }
+
+    .course-nav-links a {
+      padding: 12px 16px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: all var(--transition-fast);
+    }
+
+    .course-nav-links a:hover {
+      color: var(--primary);
+    }
+
+    .course-nav-links a.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    /* Hero */
+    .course-hero {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      border-radius: var(--radius-lg);
+      background: url('https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&q=80&w=2000') center/cover no-repeat;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      padding: var(--space-xl);
+    }
+
+    .course-hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(9, 9, 11, 0.9) 0%, rgba(9, 9, 11, 0.4) 100%);
+    }
+
+    .course-hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+    }
+
+    .course-hero-content h1 {
+      font-family: 'Lexend', sans-serif;
+      font-size: 2.4rem;
+      color: white;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+
+    /* Grid Layout */
+    .course-grid-layout {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: var(--space-xl);
+      align-items: start;
+    }
+
+    /* Widgets */
+    .announcement-item {
+      padding-bottom: var(--space-lg);
+      margin-bottom: var(--space-lg);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .announcement-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .announcement-title {
+      font-size: 1.25rem;
+      color: var(--primary);
+      margin-bottom: var(--space-xs);
+    }
+
+    .announcement-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: var(--space-md);
+    }
+
+    .announcement-body {
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+    
+    .announcement-body ul {
+      margin-left: var(--space-xl);
+      margin-top: var(--space-sm);
+      margin-bottom: var(--space-sm);
+      list-style-type: disc;
+    }
+
+    /* Instructor Profile */
+    .instructor-banner {
+      height: 100px;
+      background: var(--primary-gradient);
+    }
+
+    .instructor-avatar-large {
+      width: 80px;
+      height: 80px;
+      background: var(--bg-card);
+      border: 4px solid var(--bg-card);
+      color: var(--text-muted);
+      font-size: 2.5rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      box-shadow: var(--shadow-md);
+    }
+
+    @media (max-width: 992px) {
+      .course-grid-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</body>
+</html>

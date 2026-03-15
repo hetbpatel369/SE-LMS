@@ -1,0 +1,463 @@
+/* ============================================
+   Dashboard-Specific Styles
+   Extends the Obsidian Campus design system
+   ============================================ */
+
+/* ---------- Dashboard Header ---------- */
+.dash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-xl);
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.dash-header h1 {
+  font-size: 2rem;
+}
+
+.dash-header .dash-date {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+/* ---------- Stats Row ---------- */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+/* ---------- Dashboard Sections ---------- */
+.dash-section {
+  margin-bottom: var(--space-xl);
+}
+
+.dash-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.dash-section-header h3 { font-size: 1.2rem; }
+
+/* ---------- Activity Feed ---------- */
+.activity-list { display: flex; flex-direction: column; }
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.activity-item:last-child { border-bottom: none; }
+
+.activity-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+  margin-top: 6px;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px var(--primary-glow);
+}
+
+.activity-text { font-size: 0.85rem; color: var(--text-secondary); }
+.activity-time { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+
+/* ---------- Course Card (Dashboard) ---------- */
+.course-card-dash {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all var(--transition-normal);
+}
+
+.course-card-dash:hover {
+  box-shadow: var(--shadow-md);
+  border-color: rgba(245, 158, 11, 0.15);
+  transform: translateY(-2px);
+}
+
+.course-card-thumb {
+  height: 130px;
+  background: var(--primary-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-on-primary);
+  font-size: 2rem;
+}
+
+.course-card-info { padding: var(--space-md); }
+.course-card-info h4 { font-size: 1rem; margin-bottom: var(--space-xs); }
+.course-card-info p { font-size: 0.82rem; margin-bottom: var(--space-sm); }
+
+.course-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ---------- Grade Table ---------- */
+.grade-cell { font-weight: 700; font-family: 'Cormorant Garamond', serif; font-size: 1rem; }
+.grade-cell.grade-a { color: #4ade80; }
+.grade-cell.grade-b { color: var(--accent); }
+.grade-cell.grade-c { color: #fbbf24; }
+.grade-cell.grade-f { color: #f87171; }
+
+/* ---------- File Upload ---------- */
+.file-drop-zone {
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-xl);
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  background: var(--bg-input);
+}
+
+.file-drop-zone:hover,
+.file-drop-zone.dragover {
+  border-color: var(--primary);
+  background: var(--primary-glow);
+}
+
+.file-drop-zone svg { width: 40px; height: 40px; color: var(--text-muted); margin-bottom: var(--space-sm); }
+.file-drop-zone p { font-size: 0.88rem; }
+.file-drop-zone .file-limit { font-size: 0.72rem; color: var(--text-muted); margin-top: var(--space-xs); }
+
+/* ---------- Calendar Widget ---------- */
+.calendar-mini {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  text-align: center;
+}
+
+.calendar-day-name {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  padding: var(--space-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.calendar-day {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin: 0 auto;
+  color: var(--text-secondary);
+}
+
+.calendar-day:hover { background: var(--primary-glow); color: var(--primary); }
+
+.calendar-day.today {
+  background: var(--primary);
+  color: var(--text-on-primary);
+  font-weight: 700;
+  box-shadow: 0 0 12px var(--primary-glow);
+}
+
+/* ---------- Event List ---------- */
+.event-list { display: flex; flex-direction: column; gap: var(--space-sm); }
+
+.event-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  border-left: 2px solid var(--primary);
+  background: var(--primary-glow);
+  font-size: 0.82rem;
+  transition: all var(--transition-fast);
+}
+
+.event-item:hover { transform: translateX(4px); }
+
+.event-item .event-date {
+  font-weight: 700;
+  color: var(--primary);
+  min-width: 45px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.9rem;
+}
+
+/* ---------- Chat Layout ---------- */
+.chat-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  height: calc(100vh - var(--nav-height) - var(--space-3xl) - var(--space-xl));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.chat-contacts {
+  background: var(--bg-card);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+}
+
+.chat-contact-search {
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--border);
+}
+
+.chat-contact-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.chat-contact-item:hover,
+.chat-contact-item.active {
+  background: var(--primary-glow);
+}
+
+.chat-contact-item.active { border-left: 2px solid var(--primary); }
+
+.chat-contact-info h4 { font-size: 0.85rem; margin-bottom: 1px; font-family: 'Lexend', sans-serif; }
+.chat-contact-info p { font-size: 0.72rem; color: var(--text-muted); }
+
+.chat-main { display: flex; flex-direction: column; background: var(--bg-surface); }
+
+.chat-messages {
+  flex: 1;
+  padding: var(--space-lg);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.chat-bubble {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: var(--radius-lg);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.chat-bubble.sent {
+  background: var(--primary);
+  color: var(--text-on-primary);
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-bubble.received {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.chat-bubble .time {
+  font-size: 0.65rem;
+  opacity: 0.6;
+  margin-top: 4px;
+  display: block;
+}
+
+.chat-input-area {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border-top: 1px solid var(--border);
+  background: var(--bg-card);
+}
+
+.chat-input-area input { flex: 1; }
+
+/* ---------- Payment Styles ---------- */
+.payment-summary {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+}
+
+.payment-line {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-sm) 0;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.payment-total {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-md) 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  font-family: 'Cormorant Garamond', serif;
+  color: var(--primary);
+  border-top: 1px solid var(--border);
+  margin-top: var(--space-sm);
+}
+
+.payment-methods {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.payment-method-btn {
+  flex: 1;
+  padding: var(--space-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  cursor: pointer;
+  text-align: center;
+  font-family: 'Lexend', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+}
+
+.payment-method-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+.payment-method-btn.active {
+  border-color: var(--primary);
+  background: var(--primary-glow);
+  color: var(--primary);
+  box-shadow: 0 0 16px var(--primary-glow);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .chat-layout { grid-template-columns: 1fr; }
+  .chat-contacts { display: none; }
+  .chat-contacts.open { display: block; position: fixed; inset: 0; top: var(--nav-height); z-index: 500; }
+  .payment-methods { flex-direction: column; }
+}
+
+/* ---------- Dashboard Grid Refactor (Algoma Style) ---------- */
+.dashboard-layout-algoma {
+  padding-top: calc(var(--nav-height) + 80px); /* Clear both navbars */
+  padding-bottom: var(--space-3xl);
+}
+
+.course-navbar {
+  position: fixed;
+  top: var(--nav-height); /* Stick right under the main nav */
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  z-index: 990;
+}
+
+.dashboard-grid-algoma {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+/* My Courses Masonry Grid */
+#my-courses-list {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-md);
+  flex-direction: row !important;
+}
+
+.course-card-masonry {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 0 !important;
+  text-decoration: none;
+}
+
+.course-card-masonry:hover {
+  box-shadow: var(--shadow-md);
+  border-color: rgba(245, 158, 11, 0.15);
+  transform: translateY(-2px);
+}
+
+.course-card-masonry .cover-img {
+  width: 100%;
+  height: 140px;
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+}
+
+.course-card-masonry .content {
+  padding: var(--space-md);
+  flex: 1;
+}
+
+.course-card-masonry h4 {
+  font-size: 1.1rem;
+  margin-bottom: var(--space-xs);
+  color: var(--primary);
+  font-family: 'Lexend', sans-serif;
+}
+
+.course-card-masonry p {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+@media (max-width: 992px) {
+  .dashboard-grid-algoma {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Fallback generic layout for non-student dashboards */
+.dashboard-main {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--space-xl);
+}

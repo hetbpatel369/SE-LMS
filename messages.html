@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Messages – LMS</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+  <nav class="navbar"><div class="container flex-between">
+    <a href="index.html" class="nav-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> LMS</a>
+    <div class="nav-links"><a href="index.html">Home</a><a href="about.html">About</a><a href="contact.html">Contact</a></div>
+    <div class="nav-actions">
+      <button class="theme-toggle" aria-label="Toggle theme"><svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
+      <div id="nav-auth"><a href="login.html" class="btn btn-sm btn-secondary">Log In</a><a href="login.html" class="btn btn-sm btn-primary">Sign Up</a></div>
+      <button class="nav-toggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    </div>
+  </div></nav>
+
+  <main class="page-wrapper">
+    <div class="container">
+      <div class="chat-layout animate-up">
+        <!-- Contacts List -->
+        <div class="chat-contacts" id="contacts-panel">
+          <div class="chat-contact-search">
+            <input type="text" class="form-input" id="contact-search" placeholder="Search contacts...">
+          </div>
+          <div id="contacts-list">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="chat-main">
+          <div style="padding:var(--space-md);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:var(--space-sm);">
+            <div class="avatar" id="chat-avatar" style="font-size:0.75rem;">DS</div>
+            <div>
+              <h4 style="font-size:0.9rem;" id="chat-name">Dr. Smith</h4>
+              <span style="font-size:0.75rem;color:var(--text-muted);" id="chat-status">Professor – Mathematics 101</span>
+            </div>
+          </div>
+
+          <div class="chat-messages" id="chat-messages">
+            <!-- Populated by JS -->
+          </div>
+
+          <div class="chat-input-area">
+            <input type="text" class="form-input" id="message-input" placeholder="Type a message..." style="flex:1;">
+            <button class="btn btn-primary" id="send-btn" style="padding:12px 20px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script>
+    const CONTACTS = [
+      { id: 'prof-001', name: 'Dr. Smith', role: 'Professor – Mathematics 101', avatar: 'DS', lastMsg: 'Please review the homework.', online: true },
+      { id: 'prof-002', name: 'Ms. Johnson', role: 'Professor – English Literature', avatar: 'MJ', lastMsg: 'Essay due next week.', online: true },
+      { id: 'prof-003', name: 'Dr. Patel', role: 'Professor – Biology Basics', avatar: 'DP', lastMsg: 'Lab report feedback sent.', online: false },
+      { id: 'prof-004', name: 'Ms. Lee', role: 'Professor – Computer Science', avatar: 'ML', lastMsg: 'Good work on the project!', online: true },
+      { id: 'student-002', name: 'Jane Smith', role: 'Student', avatar: 'JS', lastMsg: 'Can you share your notes?', online: false },
+    ];
+
+    const MESSAGES = {
+      'prof-001': [
+        { sender: 'them', text: 'Hi! I wanted to remind everyone that the Algebra Test 3 is next Monday.', time: '10:30 AM' },
+        { sender: 'me', text: 'Thank you Dr. Smith! Will the test include Chapter 5?', time: '10:35 AM' },
+        { sender: 'them', text: 'Yes, Chapters 4 and 5. Focus on quadratic equations and factoring.', time: '10:38 AM' },
+        { sender: 'me', text: 'Understood. I will practice those sections this weekend.', time: '10:40 AM' },
+        { sender: 'them', text: 'Great! Feel free to email me if you have questions. Good luck!', time: '10:42 AM' },
+        { sender: 'them', text: 'Also, please review the homework I posted yesterday.', time: '2:15 PM' },
+      ],
+      'prof-002': [
+        { sender: 'them', text: 'Reminder: Shakespeare essay is due next Friday.', time: '3:00 PM' },
+        { sender: 'me', text: 'Thank you! Is there a minimum word count?', time: '3:05 PM' },
+        { sender: 'them', text: '1500 words minimum. MLA format please.', time: '3:10 PM' },
+      ],
+      'prof-003': [
+        { sender: 'them', text: 'I sent feedback on your lab report in the portal. Please check.', time: '11:00 AM' },
+        { sender: 'me', text: 'Will do! Thank you Dr. Patel.', time: '11:15 AM' },
+      ],
+      'prof-004': [
+        { sender: 'them', text: 'Your web project demo was impressive! Well done.', time: '4:00 PM' },
+        { sender: 'me', text: 'Thank you Ms. Lee! I enjoyed working on it.', time: '4:05 PM' },
+      ],
+      'student-002': [
+        { sender: 'them', text: 'Hey! Can you share your Math notes from Wednesday?', time: '5:00 PM' },
+        { sender: 'me', text: 'Sure! I will send them tonight.', time: '5:10 PM' },
+      ],
+    };
+
+    let currentContact = 'prof-001';
+
+    function renderContacts() {
+      const list = document.getElementById('contacts-list');
+      const search = (document.getElementById('contact-search').value || '').toLowerCase();
+
+      const filtered = CONTACTS.filter(c => c.name.toLowerCase().includes(search));
+
+      list.innerHTML = filtered.map(c => `
+        <div class="chat-contact-item ${c.id === currentContact ? 'active' : ''}" onclick="selectContact('${c.id}')">
+          <div class="avatar" style="font-size:0.75rem;flex-shrink:0;${c.online ? 'box-shadow:0 0 0 2px var(--bg-card), 0 0 0 4px #16a34a;' : ''}">${c.avatar}</div>
+          <div class="chat-contact-info" style="min-width:0;">
+            <h4>${c.name}</h4>
+            <p style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${c.lastMsg}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function selectContact(id) {
+      currentContact = id;
+      const contact = CONTACTS.find(c => c.id === id);
+      document.getElementById('chat-avatar').textContent = contact.avatar;
+      document.getElementById('chat-name').textContent = contact.name;
+      document.getElementById('chat-status').textContent = contact.role + (contact.online ? ' · Online' : ' · Offline');
+      renderContacts();
+      renderMessages();
+    }
+
+    function renderMessages() {
+      const container = document.getElementById('chat-messages');
+      const msgs = MESSAGES[currentContact] || [];
+      container.innerHTML = msgs.map(m => `
+        <div class="chat-bubble ${m.sender === 'me' ? 'sent' : 'received'}">
+          ${m.text}
+          <span class="time">${m.time}</span>
+        </div>
+      `).join('');
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('message-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      if (!MESSAGES[currentContact]) MESSAGES[currentContact] = [];
+      const now = new Date();
+      const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      MESSAGES[currentContact].push({ sender: 'me', text, time });
+      input.value = '';
+      renderMessages();
+
+      // Update last message in contacts
+      const contact = CONTACTS.find(c => c.id === currentContact);
+      if (contact) contact.lastMsg = text;
+      renderContacts();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Access Control
+      if (!requireAuth()) return;
+
+      renderContacts();
+      renderMessages();
+
+      document.getElementById('send-btn').addEventListener('click', sendMessage);
+      document.getElementById('message-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+      });
+      document.getElementById('contact-search').addEventListener('input', renderContacts);
+    });
+  </script>
+</body>
+</html>
