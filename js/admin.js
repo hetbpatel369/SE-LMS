@@ -2,24 +2,8 @@
    Admin Dashboard Logic
    ============================================ */
 
-const ADMIN_PENDING = [
-  { uid: 'p-new-1', name: 'Alice Chen', email: 'alice@student.edu', role: 'student' },
-  { uid: 'p-new-2', name: 'Bob Wilson', email: 'bob@student.edu', role: 'student' },
-  { uid: 'p-new-3', name: 'Carol Davis', email: 'carol@parent.edu', role: 'parent' },
-  { uid: 'p-new-4', name: 'Dr. Emily Hart', email: 'emily@lms.edu', role: 'professor' },
-  { uid: 'p-new-5', name: 'Frank Taylor', email: 'frank@student.edu', role: 'student' },
-];
-
-const ADMIN_ALL_USERS = [
-  { name: 'John Doe', email: 'john@student.edu', role: 'student', status: 'approved', joined: '2025-09-01' },
-  { name: 'Jane Smith', email: 'jane@student.edu', role: 'student', status: 'approved', joined: '2025-09-01' },
-  { name: 'Dr. Smith', email: 'smith@lms.edu', role: 'professor', status: 'approved', joined: '2025-08-15' },
-  { name: 'Ms. Johnson', email: 'johnson@lms.edu', role: 'professor', status: 'approved', joined: '2025-08-15' },
-  { name: 'Robert Doe', email: 'robert@parent.edu', role: 'parent', status: 'approved', joined: '2025-09-02' },
-  { name: 'Dr. Patel', email: 'patel@lms.edu', role: 'professor', status: 'approved', joined: '2025-08-20' },
-  { name: 'Ms. Lee', email: 'lee@lms.edu', role: 'professor', status: 'approved', joined: '2025-08-22' },
-  { name: 'Sarah Kim', email: 'sarah@student.edu', role: 'student', status: 'approved', joined: '2025-09-05' },
-];
+let ADMIN_PENDING = [];
+let ADMIN_ALL_USERS = [];
 
 const ADMIN_ACTIVITY = [
   { text: 'New user registration: Alice Chen (student)', time: '2 hours ago' },
@@ -37,12 +21,7 @@ const ADMIN_REVENUE = [
   { id: 'TRX-105', student: 'Frank Taylor', amount: 50.00, date: '2026-03-11', status: 'pending' },
 ];
 
-const ADMIN_ENROLLMENTS = [
-  { course: 'Mathematics 101', category: 'Sciences', professor: 'Dr. Smith', students: 45, capacity: 50 },
-  { course: 'English Literature', category: 'Humanities', professor: 'Ms. Johnson', students: 38, capacity: 40 },
-  { course: 'Physics Advanced', category: 'Sciences', professor: 'Dr. Garcia', students: 28, capacity: 30 },
-  { course: 'Intro to Art', category: 'Electives', professor: 'Mr. Davis', students: 25, capacity: 35 },
-];
+let ADMIN_ENROLLMENTS = [];
 
 document.addEventListener('DOMContentLoaded', () => {
   const user = getCurrentUser();
@@ -60,11 +39,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const sidebarToggle = document.getElementById('sidebar-toggle');
   if (sidebarToggle && window.innerWidth <= 1024) sidebarToggle.style.display = 'flex';
 
-  renderApprovals();
+  loadAdminData();
   renderAdminActivity();
-  renderAllUsers();
   renderRevenue();
-  renderEnrollments();
 
   // Search & filter
   document.getElementById('user-search').addEventListener('input', renderAllUsers);
@@ -82,9 +59,65 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+async function loadAdminData() {
+  try {
+    // Load pending
+    const pendingSnap = await db.collection('users').where('status', '==', 'pending').get();
+    ADMIN_PENDING = [];
+    pendingSnap.forEach(doc => ADMIN_PENDING.push({ uid: doc.id, ...doc.data() }));
+    
+    const countEl = document.getElementById('stat-pending-approvals');
+    if (countEl) countEl.textContent = ADMIN_PENDING.length;
+    
+    renderApprovals();
+
+    // Load active users
+    const usersSnap = await db.collection('users').get();
+    ADMIN_ALL_USERS = [];
+    usersSnap.forEach(doc => {
+      let data = doc.data();
+      // Ensure 'joined' field implicitly exists or use createdAt
+      const joined = data.createdAt ? data.createdAt.toDate().toISOString().split('T')[0] : '2025-01-01';
+      ADMIN_ALL_USERS.push({ uid: doc.id, ...data, joined });
+    });
+    
+    const totalCountEl = document.getElementById('stat-total-users');
+    if (totalCountEl) totalCountEl.textContent = ADMIN_ALL_USERS.length;
+
+    renderAllUsers();
+
+    // Load enrollments (courses)
+    const coursesSnap = await db.collection('courses').get();
+    ADMIN_ENROLLMENTS = [];
+    coursesSnap.forEach(doc => {
+      const c = doc.data();
+      ADMIN_ENROLLMENTS.push({
+        course: c.title || 'Untitled',
+        category: c.category || 'General',
+        professor: c.instructorName || 'TBD',
+        students: c.students ? c.students.length : 0,
+        capacity: 50 // Mock capacity
+      });
+    });
+    
+    const coursesCountEl = document.getElementById('stat-active-courses');
+    if (coursesCountEl) coursesCountEl.textContent = ADMIN_ENROLLMENTS.length;
+
+    renderEnrollments();
+  } catch(err) {
+    console.error("Error loading admin data:", err);
+  }
+}
+
 function renderApprovals() {
   const tbody = document.getElementById('approvals-table');
   if (!tbody) return;
+  
+  if (ADMIN_PENDING.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);">No pending approvals.</td></tr>';
+    return;
+  }
+  
   tbody.innerHTML = ADMIN_PENDING.map(u => `
     <tr id="approval-${u.uid}">
       <td><strong>${u.name}</strong></td>
@@ -98,29 +131,24 @@ function renderApprovals() {
   `).join('');
 }
 
-function approveUser(uid) {
-  const row = document.getElementById(`approval-${uid}`);
-  if (row) {
-    row.style.animation = 'fadeIn 0.3s ease reverse';
-    setTimeout(() => row.remove(), 300);
+async function approveUser(uid) {
+  try {
+    await db.collection('users').doc(uid).update({ status: 'approved' });
+    showToast('User approved successfully!', 'success');
+    loadAdminData();
+  } catch(err) {
+    showToast('Error approving user.', 'error');
   }
-  showToast('User approved successfully!', 'success');
-  // Update pending count
-  const countEl = document.getElementById('stat-pending-approvals');
-  const current = parseInt(countEl.textContent);
-  countEl.textContent = Math.max(0, current - 1);
 }
 
-function rejectUser(uid) {
-  const row = document.getElementById(`approval-${uid}`);
-  if (row) {
-    row.style.animation = 'fadeIn 0.3s ease reverse';
-    setTimeout(() => row.remove(), 300);
+async function rejectUser(uid) {
+  try {
+    await db.collection('users').doc(uid).delete();
+    showToast('User rejected.', 'warning');
+    loadAdminData();
+  } catch(err) {
+    showToast('Error rejecting user.', 'error');
   }
-  showToast('User rejected.', 'warning');
-  const countEl = document.getElementById('stat-pending-approvals');
-  const current = parseInt(countEl.textContent);
-  countEl.textContent = Math.max(0, current - 1);
 }
 
 function renderAdminActivity() {

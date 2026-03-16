@@ -2,29 +2,7 @@
    Parent Dashboard Logic
    ============================================ */
 
-const PARENT_STUDENTS = [
-  {
-    name: 'John Doe',
-    email: 'john@student.edu',
-    gpa: 3.5,
-    courses: [
-      { title: 'Mathematics 101', grade: 'A', progress: 72 },
-      { title: 'English Literature', grade: 'B', progress: 45 },
-      { title: 'Biology Basics', grade: 'A', progress: 88 },
-      { title: 'Computer Science', grade: 'C', progress: 30 },
-    ]
-  },
-  {
-    name: 'Jane Smith',
-    email: 'jane@student.edu',
-    gpa: 3.8,
-    courses: [
-      { title: 'Mathematics 101', grade: 'A', progress: 85 },
-      { title: 'World History', grade: 'A', progress: 70 },
-      { title: 'Biology Basics', grade: 'B', progress: 60 },
-    ]
-  }
-];
+let PARENT_STUDENTS = [];
 
 const PARENT_BILLING = [
   { student: 'John Doe', course: 'Mathematics 101', amount: 50, date: '2025-09-01', status: 'paid' },
@@ -47,13 +25,75 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (window.innerWidth <= 1024) document.getElementById('sidebar-toggle').style.display = 'flex';
 
-  renderStudentCards();
-  renderBilling();
+  if (window.innerWidth <= 1024) document.getElementById('sidebar-toggle').style.display = 'flex';
+
+  loadParentData(user);
 });
+
+async function loadParentData(user) {
+  const container = document.getElementById('student-cards');
+  if (container) container.innerHTML = '<p style="padding:var(--space-md);color:var(--text-muted);">Loading student data...</p>';
+
+  try {
+    let linkedIds = user.linkedStudents || [];
+    
+    // In demo mode, if the user doesn't have linked students in Firestore but is a demo parent:
+    if (linkedIds.length === 0 && user.email === 'robert@parent.edu') {
+      linkedIds = ['student-001', 'student-002'];
+    }
+
+    if (linkedIds.length === 0) {
+      if (container) container.innerHTML = '<p style="padding:var(--space-md);color:var(--text-muted);">No linked students found.</p>';
+      renderBilling();
+      return;
+    }
+
+    const students = [];
+    
+    for (const uid of linkedIds) {
+      const studentDoc = await db.collection('users').doc(uid).get();
+      if (!studentDoc.exists) continue;
+      
+      const sData = studentDoc.data();
+      
+      // Fetch courses for this student
+      const coursesSnap = await db.collection('courses').where('students', 'array-contains', uid).get();
+      let courses = [];
+      coursesSnap.forEach(cDoc => {
+        const cData = cDoc.data();
+        courses.push({
+          title: cData.title || 'Untitled Course',
+          grade: ['A','B','C'][Math.floor(Math.random()*3)], // Simulated grade
+          progress: cData.progress || 50
+        });
+      });
+      
+      students.push({
+        name: sData.name || 'Student',
+        email: sData.email || 'student@edu.com',
+        gpa: (Math.random() * (4.0 - 3.0) + 3.0).toFixed(1), // Simulated GPA
+        courses: courses
+      });
+    }
+
+    PARENT_STUDENTS = students;
+    renderStudentCards();
+    renderBilling(); 
+
+  } catch(err) {
+    console.error("Error loading parent data:", err);
+    if (container) container.innerHTML = '<p style="padding:var(--space-md);color:var(--text-muted);">Failed to load student data.</p>';
+  }
+}
 
 function renderStudentCards() {
   const container = document.getElementById('student-cards');
   if (!container) return;
+
+  if (PARENT_STUDENTS.length === 0) {
+    container.innerHTML = '<p style="padding:var(--space-md);color:var(--text-muted);">No linked students found.</p>';
+    return;
+  }
 
   container.innerHTML = PARENT_STUDENTS.map(s => `
     <div class="card" style="padding:var(--space-xl);">

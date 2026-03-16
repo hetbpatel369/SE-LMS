@@ -258,8 +258,41 @@ function requireAuth(redirectTo = 'login.html') {
 }
 
 function logout() {
-  localStorage.removeItem('lms-user');
-  window.location.href = 'index.html';
+  if (typeof auth !== 'undefined') {
+    auth.signOut().then(() => {
+      localStorage.removeItem('lms-user');
+      window.location.href = 'index.html';
+    });
+  } else {
+    localStorage.removeItem('lms-user');
+    window.location.href = 'index.html';
+  }
+}
+
+// Global Auth State Listener
+if (typeof auth !== 'undefined') {
+  auth.onAuthStateChanged(async (user) => {
+    if (user) {
+      try {
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        if (userDoc.exists) {
+          const userData = { uid: user.uid, ...userDoc.data() };
+          localStorage.setItem('lms-user', JSON.stringify(userData));
+          // Re-render nav if elements exist
+          if (document.getElementById('nav-auth')) {
+            updateNavAuth();
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+      }
+    } else {
+      localStorage.removeItem('lms-user');
+      if (document.getElementById('nav-auth')) {
+        updateNavAuth();
+      }
+    }
+  });
 }
 
 // ==========================================

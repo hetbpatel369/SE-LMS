@@ -57,12 +57,60 @@
     </div>
   </main>
 
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
   <script src="js/demo-data.js"></script>
   <script src="js/app.js"></script>
   <script>
-    // CONTACTS and MESSAGES are loaded from demo-data.js (LMS_CONTACTS, LMS_MESSAGES)
+    // Contacts and Messages (loaded from Firestore)
 
-    let currentContact = 'prof-001';
+    let LMS_CONTACTS = [];
+    let LMS_MESSAGES = {};
+    let currentContact = null;
+
+    async function loadContacts() {
+      try {
+        const snapshot = await db.collection('contacts').get();
+        LMS_CONTACTS = [];
+        snapshot.forEach(doc => {
+          LMS_CONTACTS.push({ docId: doc.id, ...doc.data() });
+        });
+        
+        if (LMS_CONTACTS.length > 0 && !currentContact) {
+          currentContact = LMS_CONTACTS[0].id; // The explicit contact id, not docId
+        }
+
+        renderContacts();
+        if (currentContact) {
+          selectContact(currentContact);
+        }
+      } catch (err) {
+        console.error("Error loading contacts", err);
+      }
+    }
+
+    async function loadMessages(contactId) {
+      const container = document.getElementById('chat-messages');
+      container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">Loading messages...</div>';
+
+      try {
+        const snapshot = await db.collection('messages')
+          .where('contactId', '==', contactId)
+          .get();
+        
+        LMS_MESSAGES[contactId] = [];
+        snapshot.forEach(doc => {
+          LMS_MESSAGES[contactId].push(doc.data());
+        });
+        
+        renderMessages();
+      } catch (err) {
+        console.error("Error loading messages", err);
+        container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">Failed to load messages.</div>';
+      }
+    }
 
     function renderContacts() {
       const list = document.getElementById('contacts-list');
@@ -84,11 +132,13 @@
     function selectContact(id) {
       currentContact = id;
       const contact = LMS_CONTACTS.find(c => c.id === id);
-      document.getElementById('chat-avatar').textContent = contact.avatar;
-      document.getElementById('chat-name').textContent = contact.name;
-      document.getElementById('chat-status').textContent = contact.role + (contact.online ? ' · Online' : ' · Offline');
+      if (contact) {
+        document.getElementById('chat-avatar').textContent = contact.avatar || '?';
+        document.getElementById('chat-name').textContent = contact.name || 'Unknown';
+        document.getElementById('chat-status').textContent = (contact.role || '') + (contact.online ? ' · Online' : ' · Offline');
+      }
       renderContacts();
-      renderMessages();
+      loadMessages(id);
     }
 
     function renderMessages() {
@@ -103,30 +153,44 @@
       container.scrollTop = container.scrollHeight;
     }
 
-    function sendMessage() {
+    async function sendMessage() {
       const input = document.getElementById('message-input');
       const text = input.value.trim();
-      if (!text) return;
+      if (!text || !currentContact) return;
 
-      if (!LMS_MESSAGES[currentContact]) LMS_MESSAGES[currentContact] = [];
       const now = new Date();
       const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-      LMS_MESSAGES[currentContact].push({ sender: 'me', text, time });
+      const msgData = { sender: 'me', text, time, contactId: currentContact };
+
+      // Optimistic UI Update
+      if (!LMS_MESSAGES[currentContact]) LMS_MESSAGES[currentContact] = [];
+      LMS_MESSAGES[currentContact].push(msgData);
+      
       input.value = '';
       renderMessages();
 
-      // Update last message in contacts
+      // Update last message in contacts locally
       const contact = LMS_CONTACTS.find(c => c.id === currentContact);
       if (contact) contact.lastMsg = text;
       renderContacts();
+
+      // Save to Firestore
+      try {
+        await db.collection('messages').add(msgData);
+        if (contact && contact.docId) {
+          await db.collection('contacts').doc(contact.docId).update({ lastMsg: text });
+        }
+      } catch (err) {
+        console.error("Error sending message", err);
+        showToast('Error sending message', 'error');
+      }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
       // Access Control
       if (!requireAuth()) return;
 
-      renderContacts();
-      renderMessages();
+      loadContacts();
 
       document.getElementById('send-btn').addEventListener('click', sendMessage);
       document.getElementById('message-input').addEventListener('keypress', (e) => {

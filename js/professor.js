@@ -2,24 +2,7 @@
    Professor Dashboard Logic
    ============================================ */
 
-const PROF_SUBMISSIONS = [
-  { student: 'John Doe', course: 'Mathematics 101', assignment: 'Algebra Test 3', submitted: '2026-03-14', fileUrl: '#' },
-  { student: 'Jane Smith', course: 'Mathematics 101', assignment: 'Calculus HW 5', submitted: '2026-03-13', fileUrl: '#' },
-  { student: 'Sarah Kim', course: 'Mathematics 101', assignment: 'Algebra Test 3', submitted: '2026-03-14', fileUrl: '#' },
-  { student: 'John Doe', course: 'English Literature', assignment: 'Shakespeare Essay', submitted: '2026-03-12', fileUrl: '#' },
-  { student: 'Jane Smith', course: 'English Literature', assignment: 'Poetry Analysis', submitted: '2026-03-11', fileUrl: '#' },
-];
-
-const PROF_STUDENTS = [
-  { name: 'John Doe', email: 'john.doe@student.edu', course: 'Mathematics 101', grade: 'A', progress: 92 },
-  { name: 'Jane Smith', email: 'jane.smith@student.edu', course: 'Mathematics 101', grade: 'B+', progress: 85 },
-  { name: 'Sarah Kim', email: 'sarah.kim@student.edu', course: 'Mathematics 101', grade: 'A-', progress: 88 },
-  { name: 'Michael Johnson', email: 'mike.j@student.edu', course: 'Physics Advanced', grade: 'C+', progress: 76 },
-  { name: 'Emily Chen', email: 'echen@student.edu', course: 'English Literature', grade: 'A', progress: 95 },
-  { name: 'David Wilson', email: 'david.w@student.edu', course: 'Mathematics 101', grade: 'B-', progress: 81 },
-  { name: 'Jessica Brown', email: 'j.brown@student.edu', course: 'Physics Advanced', grade: 'A', progress: 91 },
-  { name: 'Daniel Taylor', email: 'dtaylor@student.edu', course: 'English Literature', grade: 'B', progress: 83 }
-];
+let PROF_SUBMISSIONS = []; // Will be loaded from Firestore
 
 document.addEventListener('DOMContentLoaded', () => {
   const user = getCurrentUser();
@@ -60,73 +43,115 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-function renderSubmissions() {
+async function renderSubmissions() {
   const tbody = document.getElementById('submissions-table');
   if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Loading submissions...</td></tr>';
 
-  tbody.innerHTML = PROF_SUBMISSIONS.map((s, i) => `
-    <tr id="sub-${i}" ${s.grade !== undefined ? 'style="opacity: 0.6;"' : ''}>
-      <td><strong>${s.student}</strong></td>
-      <td>${s.course}</td>
-      <td>${s.assignment}</td>
-      <td>${formatDate(s.submitted)}</td>
-      <td>
-        ${s.grade !== undefined 
-          ? `<div style="display:flex; align-items:center; gap:8px;">
-               <span class="badge badge-success">Graded: ${s.grade}</span>
-               <button class="btn btn-sm btn-outline" style="padding: 2px 8px; font-size: 0.75rem;" onclick="openGradeModal(${i})">Edit</button>
-             </div>`
-          : `<button class="btn btn-sm btn-secondary" onclick="openGradeModal(${i})">Grade</button>`
-        }
-      </td>
-    </tr>
-  `).join('');
+  try {
+    const snapshot = await db.collection('submissions').get();
+    
+    PROF_SUBMISSIONS = [];
+    snapshot.forEach(doc => {
+      PROF_SUBMISSIONS.push({ id: doc.id, ...doc.data() });
+    });
+
+    if (PROF_SUBMISSIONS.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">No pending submissions.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = PROF_SUBMISSIONS.map((s, i) => `
+      <tr id="sub-${i}" ${s.grade !== undefined ? 'style="opacity: 0.6;"' : ''}>
+        <td><strong>${s.student || 'Unknown'}</strong></td>
+        <td>${s.course || 'Unknown'}</td>
+        <td>${s.assignment || 'N/A'}</td>
+        <td>${s.submitted ? formatDate(s.submitted) : 'N/A'}</td>
+        <td>
+          ${s.grade !== undefined 
+            ? `<div style="display:flex; align-items:center; gap:8px;">
+                 <span class="badge badge-success">Graded: ${s.grade}</span>
+                 <button class="btn btn-sm btn-outline" style="padding: 2px 8px; font-size: 0.75rem;" onclick="openGradeModal(${i})">Edit</button>
+               </div>`
+            : `<button class="btn btn-sm btn-secondary" onclick="openGradeModal(${i})">Grade</button>`
+          }
+        </td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    console.error("Error fetching submissions:", err);
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Error loading submissions.</td></tr>';
+  }
 }
 
-function renderStudents() {
+async function renderStudents() {
   const tbody = document.getElementById('students-table');
   if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Loading students...</td></tr>';
 
-  tbody.innerHTML = PROF_STUDENTS.map(s => `
-    <tr>
-      <td><strong>${s.name}</strong><br><small style="color:var(--text-muted);">${s.email}</small></td>
-      <td>${s.course}</td>
-      <td><strong>${s.grade}</strong></td>
-      <td style="width: 25%;">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <div class="progress-bar" style="flex:1;">
-            <div class="progress-fill" style="width: ${s.progress}%;"></div>
-          </div>
-          <span style="font-size:0.75rem;">${s.progress}%</span>
-        </div>
-      </td>
-      <td>
-        <button class="btn btn-sm btn-outline">Message</button>
-      </td>
-    </tr>
-  `).join('');
+  try {
+    const snapshot = await db.collection('users').where('role', '==', 'student').get();
+    
+    if (snapshot.empty) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">No students found.</td></tr>';
+      return;
+    }
+
+    let html = '';
+    snapshot.forEach(doc => {
+      const s = doc.data();
+      html += `
+        <tr>
+          <td><strong>${s.name}</strong><br><small style="color:var(--text-muted);">${s.email}</small></td>
+          <td>Active</td>
+          <td><strong>-</strong></td>
+          <td style="width: 25%;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div class="progress-bar" style="flex:1;">
+                <div class="progress-fill" style="width: 50%;"></div>
+              </div>
+              <span style="font-size:0.75rem;">50%</span>
+            </div>
+          </td>
+          <td>
+            <a href="messages.html" class="btn btn-sm btn-outline">Message</a>
+          </td>
+        </tr>
+      `;
+    });
+    tbody.innerHTML = html;
+  } catch (err) {
+    console.error("Error fetching students:", err);
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Error loading students.</td></tr>';
+  }
 }
 
-function openGradeModal(index) {
+async function openGradeModal(index) {
   const sub = PROF_SUBMISSIONS[index];
   const currentGrade = sub.grade !== undefined ? sub.grade : '';
-  const gradeStr = prompt(`Grade for ${sub.student} – ${sub.assignment}\nEnter score (0-100):`, currentGrade);
+  const gradeStr = prompt(`Grade for ${sub.student || 'Student'} – ${sub.assignment}\nEnter score (0-100):`, currentGrade);
   
   if (gradeStr !== null) {
-    // If they wipe it blank, clear the grade completely (ungrade)
     if (gradeStr.trim() === '') {
-      delete sub.grade;
-      showToast(`Removed grade for ${sub.student}`, 'info');
-      renderSubmissions();
+      try {
+        await db.collection('submissions').doc(sub.id).update({ grade: firebase.firestore.FieldValue.delete() });
+        showToast(`Removed grade for ${sub.student || 'Student'}`, 'info');
+        renderSubmissions();
+      } catch (err) {
+        showToast('Error removing grade.', 'error');
+      }
       return;
     }
     
-    // Otherwise validate the numeric grade
     const parsedGrade = parseInt(gradeStr);
     if (!isNaN(parsedGrade) && parsedGrade >= 0 && parsedGrade <= 100) {
-      sub.grade = parsedGrade;
-      showToast(`Graded ${sub.student}: ${parsedGrade}/100`, 'success');
-      renderSubmissions(); // Re-render to show the updated grade and Edit button
+      try {
+        await db.collection('submissions').doc(sub.id).update({ grade: parsedGrade });
+        showToast(`Graded ${sub.student || 'Student'}: ${parsedGrade}/100`, 'success');
+        renderSubmissions(); 
+      } catch (err) {
+        showToast('Error updating grade.', 'error');
+      }
     } else {
       showToast('Invalid grade. Must be a number between 0 and 100.', 'error');
     }

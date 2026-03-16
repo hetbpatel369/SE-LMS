@@ -76,14 +76,35 @@
     </div>
   </div></footer>
 
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
   <script src="js/demo-data.js"></script>
   <script src="js/app.js"></script>
   <script>
-    // Calendar events (loaded from demo-data.js via LMS_EVENTS_MAP)
-
+    // Calendar events (loaded from Firestore)
     const typeColors = { assignment: '#4f46e5', quiz: '#d97706', exam: '#dc2626', class: '#0891b2' };
 
-    let currentDate = new Date(2026, 2, 15); // March 2026
+    let currentDate = new Date(2026, 2, 15); // Default to March 2026 for demo data
+    let LMS_EVENTS_MAP = {};
+    let eventsLoaded = false;
+
+    async function loadEvents() {
+      try {
+        const snapshot = await db.collection('events').get();
+        snapshot.forEach(doc => {
+          const e = doc.data();
+          if (!LMS_EVENTS_MAP[e.date]) LMS_EVENTS_MAP[e.date] = [];
+          LMS_EVENTS_MAP[e.date].push(e);
+        });
+        eventsLoaded = true;
+        renderCalendar();
+        renderEvents();
+      } catch(err) {
+        console.error("Error loading events", err);
+      }
+    }
 
     function renderCalendar() {
       const year = currentDate.getFullYear();
@@ -148,15 +169,15 @@
       // Access Control
       if (!requireAuth()) return;
 
-      renderCalendar();
-      renderEvents();
+      loadEvents();
+
       document.getElementById('prev-month').addEventListener('click', () => {
         currentDate.setMonth(currentDate.getMonth() - 1);
-        renderCalendar();
+        if (eventsLoaded) renderCalendar();
       });
       document.getElementById('next-month').addEventListener('click', () => {
         currentDate.setMonth(currentDate.getMonth() + 1);
-        renderCalendar();
+        if (eventsLoaded) renderCalendar();
       });
     });
   </script>

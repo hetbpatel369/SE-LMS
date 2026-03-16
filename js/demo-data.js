@@ -1,9 +1,12 @@
 /* ============================================
-   LMS Demo Data
-   Centralized sample data for the front-end prototype.
-   Used by Dashboard, Calendar, and Messages pages.
+   LMS Demo Data (DEPRECATED FOR PRODUCTION USE)
+   ============================================ 
+   WARNING: This file is no longer used by the application! 
+   The application now fetches all data dynamically from Firebase.
+   This file is kept ONLY for use by seed-firebase.js via seed.html
+   to perform the initial one-time Firebase database seeding.
+   Once you have seeded the database, you can safely delete this file.
    ============================================ */
-
 /**
  * Shared Course List
  */

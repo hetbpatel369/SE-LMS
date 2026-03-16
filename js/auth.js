@@ -4,17 +4,7 @@
    Works with Firebase Auth or Demo Mode
    ============================================ */
 
-// ==========================================
-// Demo Users (for testing without Firebase)
-// ==========================================
-const DEMO_USERS = [
-  { uid: 'admin-001', name: 'Admin User', email: 'admin@lms.edu', password: 'admin123', role: 'admin', status: 'approved' },
-  { uid: 'prof-001', name: 'Dr. Smith', email: 'smith@lms.edu', password: 'prof123', role: 'professor', status: 'approved' },
-  { uid: 'prof-002', name: 'Ms. Johnson', email: 'johnson@lms.edu', password: 'prof123', role: 'professor', status: 'approved' },
-  { uid: 'student-001', name: 'John Doe', email: 'john@student.edu', password: 'student123', role: 'student', status: 'approved', parentId: 'parent-001' },
-  { uid: 'student-002', name: 'Jane Smith', email: 'jane@student.edu', password: 'student123', role: 'student', status: 'approved', parentId: 'parent-001' },
-  { uid: 'parent-001', name: 'Robert Doe', email: 'robert@parent.edu', password: 'parent123', role: 'parent', status: 'approved', linkedStudents: ['student-001', 'student-002'] },
-];
+// Demo users have been removed in favor of Firebase Auth.
 
 // ==========================================
 // Initialize Auth Page
@@ -94,45 +84,31 @@ async function handleLogin(e) {
   submitBtn.textContent = 'Logging in...';
 
   try {
-    if (firebaseReady) {
-      // Firebase Auth
-      const credential = await auth.signInWithEmailAndPassword(email, password);
-      const userDoc = await db.collection('users').doc(credential.user.uid).get();
-      const userData = userDoc.data();
-
-      if (userData.status === 'pending') {
-        showToast('Your account is pending admin approval.', 'warning');
-        await auth.signOut();
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Log In';
-        return;
-      }
-
-      const user = { uid: credential.user.uid, ...userData };
-      localStorage.setItem('lms-user', JSON.stringify(user));
-      showToast('Login successful!', 'success');
-      setTimeout(() => redirectToDashboard(user.role), 500);
-    } else {
-      // Demo mode
-      const user = DEMO_USERS.find(u => u.email === email && u.password === password);
-      if (!user) {
-        showToast('Invalid email or password.', 'error');
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Log In';
-        return;
-      }
-
-      if (user.status === 'pending') {
-        showToast('Your account is pending admin approval.', 'warning');
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Log In';
-        return;
-      }
-
-      localStorage.setItem('lms-user', JSON.stringify(user));
-      showToast('Login successful! (Demo Mode)', 'success');
-      setTimeout(() => redirectToDashboard(user.role), 500);
+    const credential = await auth.signInWithEmailAndPassword(email, password);
+    const userDoc = await db.collection('users').doc(credential.user.uid).get();
+    
+    if (!userDoc.exists) {
+      showToast('User record not found.', 'error');
+      await auth.signOut();
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Log In';
+      return;
     }
+
+    const userData = userDoc.data();
+
+    if (userData.status === 'pending') {
+      showToast('Your account is pending admin approval.', 'warning');
+      await auth.signOut();
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Log In';
+      return;
+    }
+
+    const user = { uid: credential.user.uid, ...userData };
+    localStorage.setItem('lms-user', JSON.stringify(user));
+    showToast('Login successful!', 'success');
+    setTimeout(() => redirectToDashboard(user.role), 500);
   } catch (error) {
     console.error('Login error:', error);
     showToast(error.message || 'Login failed. Please try again.', 'error');
@@ -172,24 +148,18 @@ async function handleRegister(e) {
   submitBtn.textContent = 'Creating Account...';
 
   try {
-    if (firebaseReady) {
-      // Firebase Auth
-      const credential = await auth.createUserWithEmailAndPassword(email, password);
-      await db.collection('users').doc(credential.user.uid).set({
-        name,
-        email,
-        role: role.value,
-        status: 'pending', // Admin approval required
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
+    const credential = await auth.createUserWithEmailAndPassword(email, password);
+    await db.collection('users').doc(credential.user.uid).set({
+      name,
+      email,
+      role: role.value,
+      status: 'pending', // Admin approval required
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
 
-      showToast('Account created! Waiting for admin approval.', 'success');
-      await auth.signOut();
-    } else {
-      // Demo mode
-      showToast('Account created! Waiting for admin approval. (Demo Mode)', 'success');
-    }
-
+    showToast('Account created! Waiting for admin approval.', 'success');
+    await auth.signOut();
+    
     // Switch to login tab
     document.getElementById('login-tab').click();
   } catch (error) {
@@ -215,9 +185,7 @@ async function handleForgotPassword(e) {
   }
 
   try {
-    if (firebaseReady) {
-      await auth.sendPasswordResetEmail(email);
-    }
+    await auth.sendPasswordResetEmail(email);
     showToast('Password reset email sent! Check your inbox.', 'success');
     closeModal('forgot-modal');
   } catch (error) {

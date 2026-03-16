@@ -7,13 +7,12 @@
 // This file initializes Firebase and exports the services.
 
 const firebaseConfig = {
-  // ⚠️ REPLACE these with your actual Firebase project credentials
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDAQ3xOLPSiTilvGAGwT0EqBonPYMscRnc",
+  authDomain: "lmsforlibary.firebaseapp.com",
+  projectId: "lmsforlibary",
+  storageBucket: "lmsforlibary.firebasestorage.app",
+  messagingSenderId: "202169542518",
+  appId: "1:202169542518:web:1221d3be2308970b1e3c57"
 };
 
 // These will be initialized after Firebase SDK loads
@@ -24,7 +23,9 @@ function initFirebase() {
     app = firebase.initializeApp(firebaseConfig);
     auth = firebase.auth();
     db = firebase.firestore();
-    storage = firebase.storage();
+    if (typeof firebase.storage === 'function') {
+      storage = firebase.storage();
+    }
     console.log('Firebase initialized successfully');
     return true;
   }
