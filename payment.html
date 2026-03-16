@@ -132,6 +132,14 @@
     let selectedMethod = 'card';
 
     document.addEventListener('DOMContentLoaded', () => {
+      // Enforce login requirement for enrollment
+      auth.onAuthStateChanged(user => {
+        if (!user) {
+          showToast('You must be logged in to test payments/enrollment.', 'error');
+          setTimeout(() => window.location.href = 'login.html', 1500);
+        }
+      });
+
       // Load course from URL
       const params = new URLSearchParams(window.location.search);
       const courseId = params.get('course');

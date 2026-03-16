@@ -108,3 +108,18 @@ const LMS_MESSAGES = {
     { sender: 'me', text: 'Sure! I will send them tonight.', time: '5:10 PM' },
   ],
 };
+
+/**
+ * Shared Books List (Digital Library)
+ */
+const LMS_BOOKS = [
+  { id: 'book-001', title: 'Introduction to Algorithms', author: 'Thomas H. Cormen', isbn: '9780262033848', description: 'A comprehensive guide to algorithms.', category: 'Computer Science', coverImage: 'https://via.placeholder.com/150', totalCopies: 5, availableCopies: 5, borrowPrice: 10, buyPrice: 50, rating: 4.8 },
+  { id: 'book-002', title: 'Clean Code', author: 'Robert C. Martin', isbn: '9780132350884', description: 'A Handbook of Agile Software Craftsmanship.', category: 'Software Engineering', coverImage: 'https://via.placeholder.com/150', totalCopies: 3, availableCopies: 2, borrowPrice: 8, buyPrice: 40, rating: 4.9 }
+];
+
+/**
+ * Shared Zoom Classes List
+ */
+const LMS_ZOOM_CLASSES = [
+  { id: 'zoom-001', courseId: '4', professorId: 'prof-004', title: 'CS Live Class - Zoom', description: 'Weekly live session for CS', scheduledDate: '2026-03-25T11:00:00Z', scheduledTime: '11:00', duration: 60, zoomMeetingId: '123456789', zoomLink: 'https://zoom.us/j/123456789', status: 'scheduled', maxParticipants: 50 }
+];

@@ -3,7 +3,7 @@ const DEMO_USERS = [
   { id: 'student-002', name: 'Jane Smith', email: 'jane@student.edu', password: 'password123', role: 'student', status: 'active' },
   { id: 'prof-001', name: 'Dr. Alan Smith', email: 'alan@prof.edu', password: 'password123', role: 'professor', status: 'active' },
   { id: 'prof-002', name: 'Dr. Sarah Johnson', email: 'sarah@prof.edu', password: 'password123', role: 'professor', status: 'active' },
-  { id: 'admin-001', name: 'System Admin', email: 'admin@lms.edu', password: 'admin123', role: 'admin', status: 'active' },
+  { id: 'admin-001', name: 'System Admin', email: 'admin@lms.edu', password: 'password123', role: 'admin', status: 'active' },
   { id: 'parent-001', name: 'Robert Doe', email: 'robert@parent.edu', password: 'password123', role: 'parent', status: 'active', linkedStudents: ['student-001'] }
 ];
 
@@ -110,6 +110,27 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         log(`Seeded chat history with ${partnerId}`, 'success');
+      }
+
+      // 5.5. Seed Digital Library Books
+      log('Seeding digital library books...', 'info');
+      for (const book of LMS_BOOKS) {
+        await db.collection('books').doc(book.id).set({
+          ...book,
+          createdDate: firebase.firestore.FieldValue.serverTimestamp(),
+          updatedDate: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        log(`Seeded book: ${book.title}`, 'success');
+      }
+
+      // 5.6. Seed Zoom Classes
+      log('Seeding zoom classes...', 'info');
+      for (const zClass of LMS_ZOOM_CLASSES) {
+        await db.collection('zoomClasses').doc(zClass.id).set({
+          ...zClass,
+          createdDate: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        log(`Seeded Zoom class: ${zClass.title}`, 'success');
       }
 
       // 6. Register DEMO_USERS in Firebase Auth

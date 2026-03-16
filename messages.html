@@ -64,22 +64,48 @@
   <script src="js/demo-data.js"></script>
   <script src="js/app.js"></script>
   <script>
-    // Contacts and Messages (loaded from Firestore)
-
+    let currentUser = null;
     let LMS_CONTACTS = [];
     let LMS_MESSAGES = {};
     let currentContact = null;
 
+    document.addEventListener('DOMContentLoaded', () => {
+      auth.onAuthStateChanged(user => {
+        if (!user) {
+          window.location.href = 'login.html';
+          return;
+        }
+        currentUser = user;
+        loadContacts();
+      });
+
+      document.getElementById('send-btn').addEventListener('click', sendMessage);
+      document.getElementById('message-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+      });
+      document.getElementById('contact-search').addEventListener('input', renderContacts);
+    });
+
     async function loadContacts() {
       try {
-        const snapshot = await db.collection('contacts').get();
+        // Fetch all users to chat with (excluding self)
+        const snapshot = await db.collection('users').get();
         LMS_CONTACTS = [];
         snapshot.forEach(doc => {
-          LMS_CONTACTS.push({ docId: doc.id, ...doc.data() });
+          if (doc.id !== currentUser.uid) {
+            const data = doc.data();
+            LMS_CONTACTS.push({
+              id: doc.id,
+              name: data.name || 'Anonymous',
+              role: data.role || 'Member',
+              avatar: data.name ? data.name.split(' ').map(n=>n[0]).join('') : 'U',
+              online: true 
+            });
+          }
         });
         
         if (LMS_CONTACTS.length > 0 && !currentContact) {
-          currentContact = LMS_CONTACTS[0].id; // The explicit contact id, not docId
+          currentContact = LMS_CONTACTS[0].id;
         }
 
         renderContacts();
@@ -96,15 +122,30 @@
       container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">Loading messages...</div>';
 
       try {
-        const snapshot = await db.collection('messages')
-          .where('contactId', '==', contactId)
+        // Fetch messages where sender = me AND receiver = contact
+        const sentSnapshot = await db.collection('messages')
+          .where('senderId', '==', currentUser.uid)
+          .where('receiverId', '==', contactId)
+          .get();
+          
+        // Fetch messages where sender = contact AND receiver = me
+        const recvSnapshot = await db.collection('messages')
+          .where('senderId', '==', contactId)
+          .where('receiverId', '==', currentUser.uid)
           .get();
         
-        LMS_MESSAGES[contactId] = [];
-        snapshot.forEach(doc => {
-          LMS_MESSAGES[contactId].push(doc.data());
+        const allMsgs = [];
+        sentSnapshot.forEach(doc => allMsgs.push(doc.data()));
+        recvSnapshot.forEach(doc => allMsgs.push(doc.data()));
+        
+        // Sort by timestamp if available
+        allMsgs.sort((a,b) => {
+           const tA = a.timestamp ? a.timestamp.toMillis() : 0;
+           const tB = b.timestamp ? b.timestamp.toMillis() : 0;
+           return tA - tB;
         });
         
+        LMS_MESSAGES[contactId] = allMsgs;
         renderMessages();
       } catch (err) {
         console.error("Error loading messages", err);
@@ -116,14 +157,14 @@
       const list = document.getElementById('contacts-list');
       const search = (document.getElementById('contact-search').value || '').toLowerCase();
 
-      const filtered = LMS_CONTACTS.filter(c => c.name.toLowerCase().includes(search));
+      const filtered = LMS_CONTACTS.filter(c => c.name && c.name.toLowerCase().includes(search));
 
       list.innerHTML = filtered.map(c => `
         <div class="chat-contact-item ${c.id === currentContact ? 'active' : ''}" onclick="selectContact('${c.id}')">
-          <div class="avatar" style="font-size:0.75rem;flex-shrink:0;${c.online ? 'box-shadow:0 0 0 2px var(--bg-card), 0 0 0 4px #16a34a;' : ''}">${c.avatar}</div>
+          <div class="avatar" style="font-size:0.75rem;flex-shrink:0;">${c.avatar}</div>
           <div class="chat-contact-info" style="min-width:0;">
             <h4>${c.name}</h4>
-            <p style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${c.lastMsg}</p>
+            <p style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.8rem;color:var(--text-muted);">${c.role}</p>
           </div>
         </div>
       `).join('');
@@ -144,60 +185,52 @@
     function renderMessages() {
       const container = document.getElementById('chat-messages');
       const msgs = LMS_MESSAGES[currentContact] || [];
-      container.innerHTML = msgs.map(m => `
-        <div class="chat-bubble ${m.sender === 'me' ? 'sent' : 'received'}">
+      if (msgs.length === 0) {
+        container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">No messages yet. Say hi!</div>';
+        return;
+      }
+      container.innerHTML = msgs.map(m => {
+        const isMe = m.senderId === currentUser.uid;
+        return `
+        <div class="chat-bubble ${isMe ? 'sent' : 'received'}">
           ${m.text}
-          <span class="time">${m.time}</span>
+          <span class="time">${m.timeString || ''}</span>
         </div>
-      `).join('');
+        `;
+      }).join('');
       container.scrollTop = container.scrollHeight;
     }
 
     async function sendMessage() {
       const input = document.getElementById('message-input');
       const text = input.value.trim();
-      if (!text || !currentContact) return;
+      if (!text || !currentContact || !currentUser) return;
 
       const now = new Date();
-      const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-      const msgData = { sender: 'me', text, time, contactId: currentContact };
+      const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      const msgData = { 
+        senderId: currentUser.uid, 
+        receiverId: currentContact, 
+        text, 
+        timeString,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      };
 
       // Optimistic UI Update
       if (!LMS_MESSAGES[currentContact]) LMS_MESSAGES[currentContact] = [];
-      LMS_MESSAGES[currentContact].push(msgData);
+      LMS_MESSAGES[currentContact].push({ ...msgData, timestamp: null }); 
       
       input.value = '';
       renderMessages();
 
-      // Update last message in contacts locally
-      const contact = LMS_CONTACTS.find(c => c.id === currentContact);
-      if (contact) contact.lastMsg = text;
-      renderContacts();
-
       // Save to Firestore
       try {
         await db.collection('messages').add(msgData);
-        if (contact && contact.docId) {
-          await db.collection('contacts').doc(contact.docId).update({ lastMsg: text });
-        }
       } catch (err) {
         console.error("Error sending message", err);
         showToast('Error sending message', 'error');
       }
     }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      // Access Control
-      if (!requireAuth()) return;
-
-      loadContacts();
-
-      document.getElementById('send-btn').addEventListener('click', sendMessage);
-      document.getElementById('message-input').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') sendMessage();
-      });
-      document.getElementById('contact-search').addEventListener('input', renderContacts);
-    });
   </script>
 </body>
 </html>
