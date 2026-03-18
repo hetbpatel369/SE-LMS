@@ -44,3 +44,16 @@ Based on the [IMPLEMENTATION_PLAN.txt](./IMPLEMENTATION_PLAN.txt), none of the n
 - [x] Link the messaging feature through the database (Firebase).
 - [x] Add a registration page to allow users to register as a professor.
 - [x] Enforce authentication: Users must be logged in to enroll in courses or borrow books.
+
+Changes to be made (Debug)
+- In the index page add section for ebooks on home page and like featured courses there should be featured books or top rated books or most popular books.
+- In messages at index page it should first redirect at login page in order to send messages
+- No option to assign courses to prof in admin dashboard
+- Settings buttons not working
+- On enroll now only redirect ot login page directly in course catalog page
+- In student calender the month forward and backward buttons does not work(calender in student dashbord)
+- Only show the courses that student has enrolled for in calender view
+- When a user clikes on calender for example the navigation bar should be same in all navigation bar items as it is student dashboard
+- In course catalog view info in every course it should show the length of course and there should be some kind of reviews or feedback system
+- Realign the live classes menu with courses, calender, progress and messages
+- in index page at bottom the besides the book logo the LMS font written should be dark in light mode. in that same row there either be something under platfrom or remove that part, under company column there are same things as in footer(with copyright row) so change that, and b the contact heading should be changed to contact us
