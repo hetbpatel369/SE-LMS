@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Welcome to the LMS – Access online courses, submit assignments, and track your academic progress.">
+  <title>LMS – Learning Management System</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div id="app-header"></div>
+
+  <!-- ===== Hero ===== -->
+  <main class="page-wrapper">
+    <section class="hero">
+      <div class="hero-glow"></div>
+      <div class="hero-glow-2"></div>
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-eyebrow animate-up animate-up-1">
+            <span class="eyebrow-dot"></span>
+            <span>For Grades 9 – 12</span>
+          </div>
+          <h1 class="hero-title animate-up animate-up-2">
+            Your campus,<br><em class="serif-italic" style="color: var(--primary);">everywhere.</em>
+          </h1>
+          <p class="hero-subtitle animate-up animate-up-3">
+            Access courses, submit work, join live classes, and track your progress — a complete academic platform that travels with you.
+          </p>
+          <div class="hero-actions animate-up animate-up-4">
+            <a href="/pages/public/courses.html" class="btn btn-primary btn-lg">Browse Courses</a>
+            <a href="/pages/public/login.html" class="btn btn-secondary btn-lg">Log In</a>
+            <a href="/pages/public/login.html" class="btn btn-outline btn-lg">Create Account</a>
+          </div>
+        </div>
+
+        <!-- Bento Grid – 6 uniform cards, 3 per row -->
+        <div class="bento-grid" style="grid-template-columns:repeat(3,1fr);grid-template-rows:auto;">
+          <div class="bento-item animate-up animate-up-3" id="bento-courses" style="min-height:200px;">
+            <div class="bento-icon">📘</div>
+            <h3>Courses</h3>
+            <p>Explore the full catalog — math, science, literature, technology, and more.</p>
+            <a href="/pages/public/courses.html" class="bento-link">Browse →</a>
+          </div>
+          <div class="bento-item animate-up animate-up-4" id="bento-calendar" style="min-height:200px;">
+            <div class="bento-icon">📅</div>
+            <h3>Calendar</h3>
+            <p>Deadlines, quizzes, and live class dates all in one view.</p>
+            <a href="/pages/shared/calendar.html" class="bento-link">View →</a>
+          </div>
+          <div class="bento-item animate-up animate-up-5" id="bento-messages" style="min-height:200px;">
+            <div class="bento-icon">💬</div>
+            <h3>Messages</h3>
+            <p>Chat with professors and classmates directly.</p>
+            <a href="/pages/public/login.html" class="bento-link" id="messages-link">Open →</a>
+          </div>
+          <div class="bento-item animate-up animate-up-4" id="bento-progress" style="min-height:200px;">
+            <div class="bento-icon">📊</div>
+            <h3>Progress</h3>
+            <p>Track grades, GPA, and course completion in real time.</p>
+            <a href="/pages/public/login.html" class="bento-link">Dashboard →</a>
+          </div>
+          <div class="bento-item animate-up animate-up-5" id="bento-live" style="min-height:200px;">
+            <div class="bento-icon">🎥</div>
+            <h3>Live Classes</h3>
+            <p>Join Google Meet sessions with your professor, recorded for replay.</p>
+            <a href="/pages/shared/zoom-classes.html" class="bento-link">Join →</a>
+          </div>
+          <div class="bento-item animate-up animate-up-5" id="bento-library" style="min-height:200px;">
+            <div class="bento-icon">📚</div>
+            <h3>Digital Library</h3>
+            <p>Borrow or buy textbooks and novels instantly online.</p>
+            <a href="/pages/public/library.html" class="bento-link">Explore →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Featured Courses ===== -->
+    <section class="section">
+      <div class="container">
+        <div class="section-header animate-up">
+          <div>
+            <span class="section-label">Catalog</span>
+            <h2>Featured Courses</h2>
+          </div>
+          <a href="/pages/public/courses.html" class="btn btn-sm btn-secondary">View All →</a>
+        </div>
+        <div class="carousel-container" id="featured-courses"></div>
+      </div>
+    </section>
+
+    <!-- ===== Featured Books ===== -->
+    <section class="section" style="padding-top:0;">
+      <div class="container">
+        <div class="section-header animate-up">
+          <div>
+            <span class="section-label">Digital Library</span>
+            <h2>Featured Books</h2>
+          </div>
+          <a href="/pages/public/library.html" class="btn btn-sm btn-secondary">View All →</a>
+        </div>
+        <div class="carousel-container" id="featured-books">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Stats Ribbon ===== -->
+    <section class="stats-ribbon">
+      <div class="container">
+        <div class="stats-ribbon-inner">
+          <div class="ribbon-stat">
+            <span class="ribbon-number">250+</span>
+            <span class="ribbon-label">Active Students</span>
+          </div>
+          <div class="ribbon-divider"></div>
+          <div class="ribbon-stat">
+            <span class="ribbon-number">20+</span>
+            <span class="ribbon-label">Courses</span>
+          </div>
+          <div class="ribbon-divider"></div>
+          <div class="ribbon-stat">
+            <span class="ribbon-number">15</span>
+            <span class="ribbon-label">Professors</span>
+          </div>
+          <div class="ribbon-divider"></div>
+          <div class="ribbon-stat">
+            <span class="ribbon-number">95%</span>
+            <span class="ribbon-label">Completion Rate</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="/pages/public/index.html" class="nav-logo" style="color: var(--text-primary);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:24px;height:24px;color:var(--primary);"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            <span style="color: var(--text-primary) !important;">LMS</span>
+          </a>
+          <p>Empowering high school students with modern online learning tools.</p>
+        </div>
+        <div>
+          <h4 class="footer-heading">Platform</h4>
+          <ul class="footer-links">
+            <li><a href="/pages/public/courses.html">Courses</a></li>
+            <li><a href="/pages/public/library.html">Digital Library</a></li>
+            <li><a href="/pages/shared/calendar.html">Calendar</a></li>
+            <li><a href="/pages/public/login.html">Student Portal</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-heading">Company</h4>
+          <ul class="footer-links">
+            <li><a href="/pages/public/about.html">About Us</a></li>
+            <li><a href="/pages/public/about.html#team">Our Team</a></li>
+            <li><a href="/pages/public/privacy.html">Privacy Policy</a></li>
+            <li><a href="#">Careers</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-heading">Contact Us</h4>
+          <ul class="footer-links">
+            <li><a href="mailto:support@lms.edu">support@lms.edu</a></li>
+            <li><a href="tel:+11234567890">+1 (123) 456-7890</a></li>
+            <li>123 Education St, Toronto</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 LMS. All rights reserved.</span>
+        <div>
+          <a href="/pages/public/privacy.html" style="color: var(--text-muted);">Privacy</a> ·
+          <a href="/pages/public/about.html" style="color: var(--text-muted);">About</a> ·
+          <a href="/pages/public/contact.html" style="color: var(--text-muted);">Contact</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Fallback navbar if dynamic component loading fails.
+      setTimeout(() => {
+        const header = document.getElementById('app-header');
+        if (!header || header.children.length > 0) return;
+        header.innerHTML = `
+          <nav class="navbar">
+            <div class="container flex-between">
+              <a href="/pages/public/index.html" class="nav-logo">LMS</a>
+              <div class="nav-actions">
+                <a href="/pages/public/login.html" class="btn btn-sm btn-secondary">Log In</a>
+                <a href="/pages/public/login.html" class="btn btn-sm btn-primary">Sign Up</a>
+              </div>
+            </div>
+          </nav>`;
+      }, 700);
+
+      const messagesLink = document.getElementById('messages-link');
+      if (messagesLink) {
+        messagesLink.href = '/pages/public/login.html';
+      }
+    });
+
+    const featuredCourses = [
+      { id: 1, title: 'Mathematics 101', instructor: 'Dr. Smith', price: 50, category: 'Math', students: 45 },
+      { id: 2, title: 'English Literature', instructor: 'Ms. Johnson', price: 40, category: 'English', students: 38 },
+      { id: 3, title: 'Biology Basics', instructor: 'Dr. Patel', price: 55, category: 'Science', students: 52 },
+      { id: 4, title: 'World History', instructor: 'Mr. Brown', price: 35, category: 'History', students: 30 },
+      { id: 5, title: 'Computer Science', instructor: 'Ms. Lee', price: 60, category: 'Technology', students: 61 },
+      { id: 6, title: 'Physics Advanced', instructor: 'Dr. Garcia', price: 50, category: 'Science', students: 28 },
+    ];
+
+    function renderFeaturedCourses() {
+      const grid = document.getElementById('featured-courses');
+      if (!grid) return;
+      grid.innerHTML = featuredCourses.map((c, i) => `
+        <a href="/pages/public/courses.html?id=${c.id}" class="card course-card animate-up animate-up-${(i % 3) + 2}" style="text-decoration:none;">
+          <div class="course-card-top">
+            <span class="badge badge-primary">${c.category}</span>
+            <span style="font-size:0.78rem;color:var(--text-muted);">${c.students} students</span>
+          </div>
+          <h3 class="course-card-title">${c.title}</h3>
+          <p class="course-card-instructor">${c.instructor}</p>
+          <div class="card-footer" style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:var(--primary);">$${c.price}</span>
+            <span class="btn btn-sm btn-primary">Enroll</span>
+          </div>
+        </a>
+      `).join('');
+    }
+
+    renderFeaturedCourses();
+
+    // ===== Featured Books =====
+    const FEATURED_BOOKS = [
+      { id: 'book1', title: 'Introduction to Algorithms', author: 'Cormen et al.', category: 'Computer Science', rating: 4.9, borrowPrice: 5, buyPrice: 49, coverEmoji: '💻' },
+      { id: 'book2', title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', category: 'Literature', rating: 4.7, borrowPrice: 3, buyPrice: 14, coverEmoji: '📖' },
+      { id: 'book3', title: 'A Brief History of Time', author: 'Stephen Hawking', category: 'Science', rating: 4.8, borrowPrice: 4, buyPrice: 22, coverEmoji: '🔭' },
+      { id: 'book4', title: 'Calculus Made Easy', author: 'Silvanus Thompson', category: 'Mathematics', rating: 4.6, borrowPrice: 4, buyPrice: 29, coverEmoji: '📐' },
+      { id: 'book5', title: 'Clean Code', author: 'Robert C. Martin', category: 'Computer Science', rating: 4.8, borrowPrice: 6, buyPrice: 45, coverEmoji: '🖥️' },
+      { id: 'book6', title: 'The Selfish Gene', author: 'Richard Dawkins', category: 'Science', rating: 4.5, borrowPrice: 3, buyPrice: 18, coverEmoji: '🧬' },
+    ];
+
+    function renderFeaturedBooks() {
+      const grid = document.getElementById('featured-books');
+      if (!grid) return;
+      grid.innerHTML = FEATURED_BOOKS.map((b, i) => `
+        <a href="/pages/public/library.html" class="card course-card animate-up animate-up-${(i % 3) + 2}" style="text-decoration:none;">
+          <div style="height:160px;background:linear-gradient(135deg,var(--bg-input),var(--bg-card));display:flex;align-items:center;justify-content:center;font-size:4rem;border-radius:var(--radius-md) var(--radius-md) 0 0;">${b.coverEmoji}</div>
+          <div class="course-card-top" style="padding:var(--space-md) var(--space-md) 0;">
+            <span class="badge badge-primary">${b.category}</span>
+            <span style="font-size:0.78rem;color:#fbbf24;">★ ${b.rating}</span>
+          </div>
+          <h3 class="course-card-title" style="padding:0 var(--space-md);font-size:1.1rem;margin:var(--space-xs) 0;">${b.title}</h3>
+          <p class="course-card-instructor" style="padding:0 var(--space-md);">by ${b.author}</p>
+          <div class="card-footer" style="display:flex;justify-content:space-between;align-items:center;padding:var(--space-md);">
+            <div style="display:flex;flex-direction:column;">
+              <span style="font-size:0.75rem;color:var(--text-muted);">Borrow $${b.borrowPrice}/mo</span>
+              <span style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:var(--primary);">Buy $${b.buyPrice}</span>
+            </div>
+            <span class="btn btn-sm btn-secondary">View →</span>
+          </div>
+        </a>
+      `).join('');
+    }
+
+    renderFeaturedBooks();
+  </script>
+
+  <style>
+    /* ===== Carousel ===== */
+    .carousel-container {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      gap: var(--space-md);
+      padding-bottom: var(--space-md);
+      -ms-overflow-style: none; /* IE and Edge */
+      scrollbar-width: none; /* Firefox */
+      width: 100%;
+    }
+    .carousel-container::-webkit-scrollbar {
+      display: none; 
+    }
+    .carousel-container > * {
+      flex: 0 0 calc((100% - (2 * var(--space-md))) / 3);
+      scroll-snap-align: start;
+    }
+    @media (max-width: 1024px) {
+      .carousel-container > * { flex: 0 0 calc((100% - var(--space-md)) / 2); }
+    }
+    @media (max-width: 640px) {
+      .carousel-container > * { flex: 0 0 85vw; }
+      .carousel-container { scroll-padding: 10px; }
+    }
+
+    /* ===== Home Page Specific Styles ===== */
+
+    /* Hero */
+    .hero {
+      padding: var(--space-3xl) 0 var(--space-2xl);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-glow {
+      position: absolute;
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 400px;
+      background: radial-gradient(ellipse, rgba(245, 158, 11, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-glow-2 {
+      position: absolute;
+      bottom: -80px;
+      right: -100px;
+      width: 400px;
+      height: 300px;
+      background: radial-gradient(ellipse, rgba(34, 211, 238, 0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      text-align: center;
+      max-width: 680px;
+      margin: 0 auto var(--space-3xl);
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 6px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: var(--space-lg);
+    }
+
+    .eyebrow-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--primary);
+      animation: pulseGlow 2s ease-in-out infinite;
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 4rem;
+      font-weight: 700;
+      margin-bottom: var(--space-lg);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+
+    .hero-subtitle {
+      font-size: 1.05rem;
+      max-width: 520px;
+      margin: 0 auto var(--space-xl);
+      color: var(--text-secondary);
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: var(--space-md);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* Bento Grid */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-auto-rows: auto;
+      gap: var(--space-md);
+      position: relative;
+      z-index: 1;
+    }
+
+    .bento-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      transition: all var(--transition-normal);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bento-item::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--primary-glow), transparent 50%);
+      opacity: 0;
+      transition: opacity var(--transition-normal);
+      pointer-events: none;
+    }
+
+    .bento-item:hover {
+      border-color: rgba(245, 158, 11, 0.2);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .bento-item:hover::after { opacity: 1; }
+
+    .bento-lg {
+      grid-row: span 2;
+    }
+
+    .bento-wide {
+      grid-column: span 2;
+    }
+
+    .bento-icon {
+      font-size: 2rem;
+      margin-bottom: var(--space-md);
+      position: relative;
+      z-index: 1;
+    }
+
+    .bento-item h3 {
+      font-size: 1.3rem;
+      margin-bottom: var(--space-sm);
+      position: relative;
+      z-index: 1;
+    }
+
+    .bento-item p {
+      font-size: 0.85rem;
+      margin-bottom: var(--space-md);
+      position: relative;
+      z-index: 1;
+    }
+
+    .bento-link {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--primary);
+      position: relative;
+      z-index: 1;
+      transition: letter-spacing var(--transition-normal);
+    }
+
+    .bento-item:hover .bento-link {
+      letter-spacing: 0.12em;
+    }
+
+    /* Section Header */
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: var(--space-xl);
+      gap: var(--space-md);
+    }
+
+    .section-label {
+      display: block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--primary);
+      margin-bottom: var(--space-xs);
+    }
+
+    /* Course Card */
+    .course-card {
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .course-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-md);
+    }
+
+    .course-card-title {
+      font-size: 1.3rem;
+      margin-bottom: var(--space-xs);
+      color: var(--text-primary);
+    }
+
+    .course-card-instructor {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: auto;
+    }
+
+    /* Stats Ribbon */
+    .stats-ribbon {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-card);
+      padding: var(--space-2xl) 0;
+    }
+
+    .stats-ribbon-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2xl);
+    }
+
+    .ribbon-stat {
+      text-align: center;
+    }
+
+    .ribbon-number {
+      display: block;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .ribbon-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    .ribbon-divider {
+      width: 1px;
+      height: 50px;
+      background: var(--border);
+    }
+
+    @media (max-width: 768px) {
+      .hero-title { font-size: 2.6rem; }
+      .bento-grid { grid-template-columns: 1fr; }
+      .bento-lg { grid-row: auto; }
+      .bento-wide { grid-column: auto; }
+      .stats-ribbon-inner {
+        flex-wrap: wrap;
+        gap: var(--space-xl);
+      }
+      .ribbon-divider { display: none; }
+    }
+  </style>
+</body>
+</html>

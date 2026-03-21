@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Live Google Meet classes scheduled on the LMS platform.">
+  <title>Live Classes – LMS</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+  <div id="app-header"></div>
+
+  
+
+  
+
+  <div class="dashboard-layout-algoma">
+    <main class="dashboard-main">
+      <div class="dash-header animate-up">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;width:100%;">
+          <div>
+            <h1>Live <em class="serif-italic" style="color:var(--primary);">Classes</em></h1>
+            <p style="color:var(--text-secondary);">Join scheduled Google Meet sessions for your enrolled courses — all sessions are recorded for later review.</p>
+          </div>
+          <a href="/pages/shared/class-recordings.html" class="btn btn-sm btn-secondary">📼 Recordings</a>
+        </div>
+      </div>
+
+      <!-- Upcoming -->
+      <div class="dash-section animate-up animate-up-1">
+        <div class="dash-section-header">
+          <h3>Upcoming Sessions</h3>
+          <select class="form-select" id="filter-course" style="width:200px;padding:8px 12px;">
+            <option value="all">All Courses</option>
+          </select>
+        </div>
+        <div id="classes-list">
+          <p style="padding:var(--space-md);color:var(--text-muted);">Loading live classes…</p>
+        </div>
+      </div>
+
+      <!-- Past Sessions Banner -->
+      <div class="dash-section animate-up animate-up-2">
+        <div class="card" style="padding:var(--space-xl);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--space-md);background:linear-gradient(135deg,rgba(245,158,11,0.06),transparent);border-color:rgba(245,158,11,0.18);">
+          <div>
+            <h3 style="margin-bottom:4px;">📼 Missed a session?</h3>
+            <p style="color:var(--text-secondary);font-size:0.9rem;">Every class is recorded and available in your recordings library.</p>
+          </div>
+          <a href="/pages/shared/class-recordings.html" class="btn btn-primary">View All Recordings →</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    const DEMO_CLASSES = [
+      { id:'m1', title:'Python Intro: Functions & Scope', course:'Computer Science – Intro to Python', courseId:'c-cs', instructor:'Mr. James Chen', date:'2026-03-25', time:'11:00 AM', duration:'75 min', meetLink:'https://meet.google.com/abc-defg-hij', status:'upcoming' },
+      { id:'m2', title:'Gatsby Ch. 4–6 Discussion', course:'English Literature 11', courseId:'c-eng', instructor:'Ms. Sarah Johnson', date:'2026-03-31', time:'2:00 PM', duration:'60 min', meetLink:'https://meet.google.com/klm-nopq-rst', status:'upcoming' },
+      { id:'m3', title:'Genetics & Punnett Squares Review', course:'Biology – Cells & Genetics', courseId:'c-bio', instructor:'Dr. Rina Patel', date:'2026-04-01', time:'9:00 AM', duration:'60 min', meetLink:'https://meet.google.com/uvw-xyz1-234', status:'upcoming' },
+      { id:'m4', title:'Quadratics & Factoring Masterclass', course:'Mathematics 101', courseId:'c-math', instructor:'Dr. Alan Smith', date:'2026-04-06', time:'10:00 AM', duration:'90 min', meetLink:'https://meet.google.com/567-890a-bcd', status:'upcoming' },
+    ];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!requireAuth()) return;
+
+      const list = document.getElementById('classes-list');
+      const filterSelect = document.getElementById('filter-course');
+      let allClasses = [];
+
+      // Try loading from Firestore first
+      const user = getCurrentUser();
+      try {
+        let enrolledIds = [];
+        if (user && user.role === 'student') {
+          const cSnap = await db.collection('courses').where('students', 'array-contains', user.uid).get();
+          enrolledIds = cSnap.docs.map(d => d.id);
+        }
+
+        const snap = await db.collection('meetClasses').where('status', '==', 'upcoming').get();
+        allClasses = snap.empty ? DEMO_CLASSES : snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+        // Filter by enrolled
+        if (user && user.role === 'student' && enrolledIds.length > 0) {
+           allClasses = allClasses.filter(c => enrolledIds.includes(c.courseId));
+        } else if (user && user.role === 'student') {
+           allClasses = []; // no enrolled courses -> no live classes
+        }
+        
+        allClasses.sort((a,b) => new Date(a.date) - new Date(b.date));
+      } catch(e) {
+        console.warn('Fallback to demo classes:', e);
+        allClasses = DEMO_CLASSES;
+        if (user && user.role === 'student' && enrolledIds && enrolledIds.length > 0) {
+           allClasses = allClasses.filter(c => enrolledIds.includes(c.courseId));
+        } else if (user && user.role === 'student') {
+           allClasses = [];
+        }
+      }
+
+      // Populate filter
+      const courses = [...new Set(allClasses.map(c => c.course))];
+      courses.forEach(course => {
+        const opt = document.createElement('option');
+        opt.value = course; opt.textContent = course;
+        filterSelect.appendChild(opt);
+      });
+
+      function renderClasses() {
+        const chosen = filterSelect.value;
+        const classes = chosen === 'all' ? allClasses : allClasses.filter(c => c.course === chosen);
+        if (classes.length === 0) {
+          list.innerHTML = '<p style="padding:var(--space-md);color:var(--text-muted);">No upcoming classes found for your enrolled subjects.</p>';
+          return;
+        }
+        list.innerHTML = classes.map(c => {
+          const dateObj = new Date(c.date + 'T12:00:00');
+          const formattedDate = dateObj.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+          return `
+            <div class="card animate-up" style="padding:var(--space-lg);margin-bottom:var(--space-md);display:flex;gap:var(--space-lg);align-items:center;flex-wrap:wrap;">
+              <div style="width:80px;height:80px;border-radius:var(--radius-md);background:linear-gradient(135deg,#1a73e8,#0d47a1);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-weight:700;flex-shrink:0;">
+                <span style="font-size:1.5rem;">${dateObj.getDate()}</span>
+                <span style="font-size:0.7rem;text-transform:uppercase;">${dateObj.toLocaleDateString('en-US',{month:'short'})}</span>
+              </div>
+              <div style="flex:1;">
+                <span class="badge badge-primary" style="margin-bottom:4px;">${c.course}</span>
+                <h4 style="margin-bottom:4px;">${c.title}</h4>
+                <p style="font-size:0.85rem;color:var(--text-muted);">👨‍🏫 ${c.instructor} &nbsp;·&nbsp; 🕐 ${c.time} &nbsp;·&nbsp; ⏱ ${c.duration}</p>
+                <p style="font-size:0.82rem;color:var(--text-secondary);">${formattedDate}</p>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0;align-items:center;">
+                <a href="${c.meetLink}" target="_blank" class="btn btn-primary" style="display:flex;align-items:center;gap:6px;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 10l4.553-2.276A1 1 0 0 1 21 8.723v6.554a1 1 0 0 1-1.447.894L15 14M3 8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  Join Meet
+                </a>
+                <span style="font-size:0.72rem;color:var(--text-muted);">via Google Meet</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      filterSelect.addEventListener('change', renderClasses);
+      renderClasses();
+    });
+  </script>
+</body>
+</html>

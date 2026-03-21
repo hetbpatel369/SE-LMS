@@ -22,39 +22,74 @@ const ADMIN_REVENUE = [
 ];
 
 let ADMIN_ENROLLMENTS = [];
+let ADMIN_SESSION_READY = false;
 
 document.addEventListener('DOMContentLoaded', () => {
-  const user = getCurrentUser();
-  if (!user || user.role !== 'admin') {
-    window.location.href = 'login.html';
+  if (typeof auth === 'undefined' || !auth) {
+    window.location.href = '/pages/public/login.html';
     return;
   }
 
-  const adminNameEl = document.getElementById('admin-name');
-  if (adminNameEl) adminNameEl.textContent = user.name;
+  auth.onAuthStateChanged(async (firebaseUser) => {
+    if (!firebaseUser) {
+      window.location.href = '/pages/public/login.html';
+      return;
+    }
 
-  const adminDateEl = document.getElementById('admin-date');
-  if (adminDateEl) adminDateEl.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
-  const sidebarToggle = document.getElementById('sidebar-toggle');
-  if (sidebarToggle && window.innerWidth <= 1024) sidebarToggle.style.display = 'flex';
-
-  loadAdminData();
-  renderAdminActivity();
-  renderRevenue();
-
-  // Search & filter
-  document.getElementById('user-search').addEventListener('input', renderAllUsers);
-  document.getElementById('user-filter').addEventListener('change', renderAllUsers);
-
-  // Sidebar navigation
-  document.querySelectorAll('.sidebar-nav a').forEach(link => {
-    link.addEventListener('click', (e) => {
-      if (link.getAttribute('href') === '#') {
-        e.preventDefault();
-        document.querySelectorAll('.sidebar-nav a').forEach(l => l.classList.remove('active'));
-        link.classList.add('active');
+    let user = getCurrentUser();
+    if (!user || !user.role) {
+      try {
+        const userDoc = await db.collection('users').doc(firebaseUser.uid).get();
+        if (userDoc.exists) {
+          user = { uid: firebaseUser.uid, ...userDoc.data() };
+        } else if ((firebaseUser.email || '').toLowerCase() === 'admin@lms.edu') {
+          user = {
+            uid: firebaseUser.uid,
+            email: 'admin@lms.edu',
+            name: 'Dr. Margaret Osei',
+            role: 'admin',
+            status: 'active'
+          };
+        }
+      } catch (err) {
+        console.error('Admin auth bootstrap error:', err);
       }
+    }
+
+    if (!user || user.role !== 'admin') {
+      window.location.href = '/pages/public/login.html';
+      return;
+    }
+
+    if (ADMIN_SESSION_READY) return;
+    ADMIN_SESSION_READY = true;
+
+    const adminNameEl = document.getElementById('admin-name');
+    if (adminNameEl) adminNameEl.textContent = user.name;
+
+    const adminDateEl = document.getElementById('admin-date');
+    if (adminDateEl) adminDateEl.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    if (sidebarToggle && window.innerWidth <= 1024) sidebarToggle.style.display = 'flex';
+
+    loadAdminData();
+    renderAdminActivity();
+    renderRevenue();
+
+    // Search & filter
+    document.getElementById('user-search').addEventListener('input', renderAllUsers);
+    document.getElementById('user-filter').addEventListener('change', renderAllUsers);
+
+    // Sidebar navigation
+    document.querySelectorAll('.sidebar-nav a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        if (link.getAttribute('href') === '#') {
+          e.preventDefault();
+          document.querySelectorAll('.sidebar-nav a').forEach(l => l.classList.remove('active'));
+          link.classList.add('active');
+        }
+      });
     });
   });
 });

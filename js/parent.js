@@ -4,28 +4,36 @@
 
 let PARENT_STUDENTS = [];
 
-const PARENT_BILLING = [
-  { student: 'John Doe', course: 'Mathematics 101', amount: 50, date: '2025-09-01', status: 'paid' },
-  { student: 'John Doe', course: 'English Literature', amount: 40, date: '2025-09-01', status: 'paid' },
-  { student: 'Jane Smith', course: 'Mathematics 101', amount: 50, date: '2025-09-01', status: 'paid' },
-  { student: 'John Doe', course: 'Computer Science', amount: 60, date: '2026-01-10', status: 'paid' },
-  { student: 'Jane Smith', course: 'Biology Basics', amount: 55, date: '2026-01-10', status: 'pending' },
-];
+window.resetStudentPassword = function(email) {
+  if (!email) return;
+  auth.sendPasswordResetEmail(email)
+    .then(() => showToast(`Password reset link sent to ${email}`, 'success'))
+    .catch(e => {
+        console.error(e);
+        showToast(e.message || 'Error sending password reset link.', 'error');
+    });
+};
+
+let PARENT_BILLING = [];
 
 document.addEventListener('DOMContentLoaded', () => {
   const user = getCurrentUser();
   if (!user || user.role !== 'parent') {
-    window.location.href = 'login.html';
+    window.location.href = '/pages/public/login.html';
     return;
   }
 
-  document.getElementById('parent-name').textContent = user.name;
-  document.getElementById('parent-avatar').textContent = user.name.split(' ').map(n => n[0]).join('');
-  document.getElementById('parent-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const nameEl = document.getElementById('parent-name');
+  if (nameEl) nameEl.textContent = user.name;
+  
+  const avatarEl = document.getElementById('parent-avatar');
+  if (avatarEl) avatarEl.textContent = user.name.split(' ').map(n => n[0]).join('');
+  
+  const dateEl = document.getElementById('parent-date');
+  if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-  if (window.innerWidth <= 1024) document.getElementById('sidebar-toggle').style.display = 'flex';
-
-  if (window.innerWidth <= 1024) document.getElementById('sidebar-toggle').style.display = 'flex';
+  const sbToggle = document.getElementById('sidebar-toggle');
+  if (window.innerWidth <= 1024 && sbToggle) sbToggle.style.display = 'flex';
 
   loadParentData(user);
 });
@@ -64,7 +72,8 @@ async function loadParentData(user) {
         courses.push({
           title: cData.title || 'Untitled Course',
           grade: ['A','B','C'][Math.floor(Math.random()*3)], // Simulated grade
-          progress: cData.progress || 50
+          progress: cData.progress || 50,
+          price: cData.price || 50
         });
       });
       
@@ -75,6 +84,19 @@ async function loadParentData(user) {
         courses: courses
       });
     }
+
+    PARENT_BILLING = [];
+    students.forEach(s => {
+      s.courses.forEach(c => {
+         PARENT_BILLING.push({
+            student: s.name,
+            course: c.title,
+            amount: c.price,
+            date: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
+            status: Math.random() > 0.3 ? 'paid' : 'pending' // 70% paid, 30% pending
+         });
+      });
+    });
 
     PARENT_STUDENTS = students;
     renderStudentCards();
@@ -96,11 +118,12 @@ function renderStudentCards() {
   }
 
   container.innerHTML = PARENT_STUDENTS.map(s => `
-    <div class="card" style="padding:var(--space-xl);">
+    <div class="card" style="padding:var(--space-xl); position:relative;">
+      <button class="btn btn-sm btn-outline" style="position:absolute;top:var(--space-md);right:var(--space-md);" onclick="resetStudentPassword('${s.email}')">Reset Password</button>
       <div style="display:flex;align-items:center;gap:var(--space-md);margin-bottom:var(--space-lg);">
         <div class="avatar avatar-lg">${s.name.split(' ').map(n => n[0]).join('')}</div>
         <div>
-          <h3 style="font-size:1.1rem;">${s.name}</h3>
+          <h3 style="font-size:1.1rem;padding-right:90px;">${s.name}</h3>
           <p style="font-size:0.85rem;">${s.email}</p>
           <span class="badge badge-primary" style="margin-top:4px;">GPA: ${s.gpa}</span>
         </div>
@@ -135,6 +158,9 @@ function renderBilling() {
       <td><strong>$${b.amount}.00</strong></td>
       <td>${formatDate(b.date)}</td>
       <td><span class="badge badge-${b.status === 'paid' ? 'success' : 'warning'}">${b.status === 'paid' ? 'Paid' : 'Pending'}</span></td>
+      <td>
+        ${b.status === 'pending' ? `<button class="btn btn-sm btn-primary" onclick="showToast('Payment gateway coming soon', 'info')">Pay Now</button>` : `<span style="color:var(--text-muted);font-size:0.85rem;">Completed</span>`}
+      </td>
     </tr>
   `).join('');
 }

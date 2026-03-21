@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seed Firebase Database – LMS</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body { padding: 40px; font-family: 'Lexend', sans-serif; background: var(--bg-main); color: var(--text-primary); }
+    h1 { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; margin-bottom: 8px; }
+    .warning-box { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 16px 20px; margin: 16px 0 24px; }
+    .info-box  { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.3); border-radius: 8px; padding: 16px 20px; margin: 16px 0 24px; }
+    .log-container { max-width: 720px; margin: 20px auto; background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid var(--border); height: 450px; overflow-y: auto; font-family: monospace; font-size: 13px; }
+    .log-entry { margin-bottom: 4px; }
+    .success { color: #10b981; }
+    .error   { color: #ef4444; }
+    .info    { color: #60a5fa; }
+    .warning { color: #f59e0b; }
+    .btn-row { display: flex; gap: 12px; margin: 20px 0; flex-wrap: wrap; align-items: center; }
+    .creds-table { max-width: 720px; margin: 30px auto; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+    .creds-table table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    .creds-table th { background: var(--bg-input); padding: 10px 16px; text-align: left; font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; }
+    .creds-table td { padding: 10px 16px; border-top: 1px solid var(--border-subtle); }
+    .role-badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; }
+    .role-student  { background: rgba(79,70,229,0.15); color: #818cf8; }
+    .role-professor{ background: rgba(6,182,212,0.15); color: #22d3ee; }
+    .role-parent   { background: rgba(5,150,105,0.15); color: #34d399; }
+    .role-admin    { background: rgba(245,158,11,0.15); color: #fbbf24; }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <div id="app-header"></div>
+  <h1>🗄️ LMS Firebase Data Seeder</h1>
+  <p style="color:var(--text-secondary);">One-click tool to populate your Firestore database with realistic demo data.</p>
+
+  <div class="warning-box">
+    <strong>⚠️ Heads up:</strong> This will overwrite existing <code>courses</code>, <code>books</code>, <code>events</code>, <code>meetClasses</code>, and <code>grades</code> collections. User <code>contacts</code> and <code>users</code> documents will be upserted (safe to re-run).
+  </div>
+
+  <div class="info-box">
+    <strong>📋 What will be seeded:</strong> 8 courses · 12 books · 7 Google Meet sessions · 12 events · 8 grades · 6 students · 4 professors · 3 parents · 1 admin
+  </div>
+
+  <div class="btn-row">
+    <button id="seed-btn" class="btn btn-primary" style="font-size:1rem;padding:12px 28px;">🚀 Start Seeding Database</button>
+    <a href="/pages/public/index.html" class="btn btn-secondary">← Back to Home</a>
+  </div>
+
+  <div class="log-container" id="log-output">
+    <div class="log-entry info">Waiting to start... click the button above.</div>
+  </div>
+
+  <!-- Credential Reference Table -->
+  <div class="creds-table" style="margin-top:40px;">
+    <table>
+      <thead><tr><th>Name</th><th>Email</th><th>Password</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td>Jordan Mitchell</td><td>jordan.m@student.lms.edu</td><td>Demo@1234</td><td><span class="role-badge role-student">Student</span></td></tr>
+        <tr><td>Priya Sharma</td><td>priya.s@student.lms.edu</td><td>Demo@1234</td><td><span class="role-badge role-student">Student</span></td></tr>
+        <tr><td>Ethan Kowalski</td><td>ethan.k@student.lms.edu</td><td>Demo@1234</td><td><span class="role-badge role-student">Student</span></td></tr>
+        <tr><td>Aisha Okonkwo</td><td>aisha.o@student.lms.edu</td><td>Demo@1234</td><td><span class="role-badge role-student">Student</span></td></tr>
+        <tr><td>Lucas Beaumont</td><td>lucas.b@student.lms.edu</td><td>Demo@1234</td><td><span class="role-badge role-student">Student</span></td></tr>
+        <tr><td>Sofia Reyes</td><td>sofia.r@student.lms.edu</td><td>Demo@1234</td><td><span class="role-badge role-student">Student</span></td></tr>
+        <tr><td>Dr. Alan Smith</td><td>a.smith@lms.edu</td><td>Demo@1234</td><td><span class="role-badge role-professor">Professor</span></td></tr>
+        <tr><td>Ms. Sarah Johnson</td><td>s.johnson@lms.edu</td><td>Demo@1234</td><td><span class="role-badge role-professor">Professor</span></td></tr>
+        <tr><td>Dr. Rina Patel</td><td>r.patel@lms.edu</td><td>Demo@1234</td><td><span class="role-badge role-professor">Professor</span></td></tr>
+        <tr><td>Mr. James Chen</td><td>j.chen@lms.edu</td><td>Demo@1234</td><td><span class="role-badge role-professor">Professor</span></td></tr>
+        <tr><td>Robert Mitchell</td><td>r.mitchell@parent.lms.edu</td><td>Demo@1234</td><td><span class="role-badge role-parent">Parent</span></td></tr>
+        <tr><td>Ananya Sharma</td><td>a.sharma@parent.lms.edu</td><td>Demo@1234</td><td><span class="role-badge role-parent">Parent</span></td></tr>
+        <tr><td>Emeka Okonkwo</td><td>e.okonkwo@parent.lms.edu</td><td>Demo@1234</td><td><span class="role-badge role-parent">Parent</span></td></tr>
+        <tr><td>Dr. Margaret Osei</td><td>admin@lms.edu</td><td>Demo@1234</td><td><span class="role-badge role-admin">Admin</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/seed-firebase.js"></script>
+</body>
+</html>

@@ -7,7 +7,7 @@ let PROF_SUBMISSIONS = []; // Will be loaded from Firestore
 document.addEventListener('DOMContentLoaded', () => {
   const user = getCurrentUser();
   if (!user || user.role !== 'professor') {
-    window.location.href = 'login.html';
+    window.location.href = '/pages/public/login.html';
     return;
   }
 
@@ -114,7 +114,7 @@ async function renderStudents() {
             </div>
           </td>
           <td>
-            <a href="messages.html" class="btn btn-sm btn-outline">Message</a>
+            <a href="/pages/shared/messages.html" class="btn btn-sm btn-outline">Message</a>
           </td>
         </tr>
       `;

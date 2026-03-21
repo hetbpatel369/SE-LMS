@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile – LMS</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+  <div id="app-header"></div>
+
+  
+
+  <main class="page-wrapper animate-up">
+    <div class="container" style="max-width: 600px;">
+      <h1 class="font-serif italic" style="margin-bottom: var(--space-xl); text-align: center;">My <span style="color:var(--primary)">Profile</span></h1>
+      
+      <div class="card" style="padding: var(--space-xl);">
+        <div style="display:flex; align-items:center; gap:var(--space-md); margin-bottom: var(--space-lg); border-bottom: 1px solid var(--border); padding-bottom: var(--space-lg);">
+          <div class="avatar" style="font-size:1.5rem; width:80px; height:80px;" id="profile-avatar">U</div>
+          <div>
+            <h2 id="profile-name">User Name</h2>
+            <p style="color:var(--text-muted);" id="profile-role">User Role</p>
+          </div>
+        </div>
+
+        <form onsubmit="event.preventDefault(); showToast('Profile updated (Demo)', 'success');">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" class="form-input" id="input-name" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" class="form-input" id="input-email" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Student ID (Optional)</label>
+            <input type="text" class="form-input" placeholder="e.g. 100456789">
+          </div>
+          <button type="submit" class="btn btn-primary" style="margin-top: var(--space-md);">Save Changes</button>
+        </form>
+      </div>
+
+      <div class="card" style="padding: var(--space-xl); margin-top: var(--space-xl);">
+        <div class="dash-section-header" style="margin-bottom: var(--space-md);">
+          <h3>My Books</h3>
+        </div>
+        <div class="grid-2" style="gap: var(--space-md); align-items:start;">
+          <div>
+            <h4 style="margin-bottom: var(--space-sm);">Borrowed</h4>
+            <div id="profile-borrowed-books" style="display:flex;flex-direction:column;gap:var(--space-sm);"></div>
+          </div>
+          <div>
+            <h4 style="margin-bottom: var(--space-sm);">Purchased</h4>
+            <div id="profile-purchased-books" style="display:flex;flex-direction:column;gap:var(--space-sm);"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!requireAuth()) return;
+      const user = getCurrentUser();
+      
+      document.getElementById('profile-name').textContent = user.name;
+      document.getElementById('profile-role').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+      document.getElementById('profile-avatar').textContent = user.name.charAt(0).toUpperCase();
+      
+      document.getElementById('input-name').value = user.name;
+      document.getElementById('input-email').value = user.email || '';
+
+      const borrowedContainer = document.getElementById('profile-borrowed-books');
+      const purchasedContainer = document.getElementById('profile-purchased-books');
+
+      const renderEmpty = (el, label) => {
+        el.innerHTML = `<div style="padding:var(--space-md);border:1px dashed var(--border);border-radius:var(--radius-sm);color:var(--text-muted);font-size:0.85rem;">No ${label} books yet.</div>`;
+      };
+
+      const renderRows = async (rows, el, isBorrowed) => {
+        if (!rows.length) {
+          renderEmpty(el, isBorrowed ? 'borrowed' : 'purchased');
+          return;
+        }
+
+        let html = '';
+        for (const row of rows) {
+          const bookDoc = await db.collection('books').doc(row.bookId).get();
+          const book = bookDoc.exists ? bookDoc.data() : null;
+          if (!book) continue;
+
+          html += `
+            <div style="padding:var(--space-sm) var(--space-md);border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg-card);">
+              <div style="font-weight:600;font-size:0.9rem;">${book.title}</div>
+              <div style="font-size:0.8rem;color:var(--text-muted);">${book.author || 'Unknown author'}</div>
+              ${isBorrowed ? `<div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">Due: ${row.dueDate ? new Date(row.dueDate).toLocaleDateString() : 'N/A'}</div>` : ''}
+            </div>`;
+        }
+
+        el.innerHTML = html || `<div style="padding:var(--space-md);border:1px dashed var(--border);border-radius:var(--radius-sm);color:var(--text-muted);font-size:0.85rem;">No books to display.</div>`;
+      };
+
+      try {
+        const [borrowedSnap, purchasedSnap] = await Promise.all([
+          db.collection('borrows').where('userId', '==', user.uid).where('status', '==', 'active').get(),
+          db.collection('purchases').where('userId', '==', user.uid).get()
+        ]);
+
+        await renderRows(borrowedSnap.docs.map(d => d.data()), borrowedContainer, true);
+        await renderRows(purchasedSnap.docs.map(d => d.data()), purchasedContainer, false);
+      } catch (err) {
+        borrowedContainer.innerHTML = '<div style="color:var(--text-muted);font-size:0.85rem;">Failed to load borrowed books.</div>';
+        purchasedContainer.innerHTML = '<div style="color:var(--text-muted);font-size:0.85rem;">Failed to load purchased books.</div>';
+      }
+    });
+  </script>
+</body>
+</html>

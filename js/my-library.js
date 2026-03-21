@@ -2,42 +2,72 @@ document.addEventListener('DOMContentLoaded', () => {
   const borrowedGrid = document.getElementById('borrowed-books-grid');
   const purchasedGrid = document.getElementById('purchased-books-grid');
 
-  auth.onAuthStateChanged(async (user) => {
-    if (!user) {
-      window.location.href = 'login.html';
+  function renderError(message) {
+    const html = `<div style="grid-column:1/-1; color:var(--danger); padding:var(--space-md); text-align:center;">${message}</div>`;
+    borrowedGrid.innerHTML = html;
+    purchasedGrid.innerHTML = html;
+  }
+
+  async function initLibraryPage() {
+    try {
+      const cachedUser = getCurrentUser();
+      if (cachedUser && cachedUser.uid) {
+        await fetchMyBooks(cachedUser.uid);
+        return;
+      }
+
+      if (typeof auth !== 'undefined' && auth) {
+        auth.onAuthStateChanged(async (user) => {
+          if (!user) {
+            window.location.href = '/pages/public/login.html';
+            return;
+          }
+          await fetchMyBooks(user.uid);
+        });
+        return;
+      }
+
+      window.location.href = '/pages/public/login.html';
+    } catch (error) {
+      console.error('Error initializing library page:', error);
+      renderError('Failed to load library data.');
+    }
+  }
+
+  initLibraryPage();
+
+  async function fetchMyBooks(userId) {
+    if (typeof db === 'undefined' || !db) {
+      renderError('Database is not available. Please refresh and try again.');
       return;
     }
 
+    let borrowed = [];
+    let purchased = [];
     try {
-      await fetchMyBooks(user.uid);
-    } catch (error) {
-      console.error('Error fetching library data:', error);
-      borrowedGrid.innerHTML = `<div style="grid-column:1/-1; color:var(--danger); padding:var(--space-md); text-align:center;">Failed to load library data.</div>`;
+      const [borrowedSnap, purchasedSnap] = await Promise.all([
+        db.collection('borrows')
+          .where('userId', '==', userId)
+          .where('status', '==', 'active')
+          .get(),
+        db.collection('purchases')
+          .where('userId', '==', userId)
+          .get()
+      ]);
+
+      borrowed = borrowedSnap.docs.map(doc => ({ id: doc.id, transactionType: 'borrow', ...doc.data() }));
+      purchased = purchasedSnap.docs.map(doc => ({ id: doc.id, transactionType: 'buy', ...doc.data() }));
+    } catch(err) {
+      console.error('Failed to fetch library transactions:', err);
+      renderError('Failed to load your borrowed/purchased books.');
+      return;
     }
-  });
-
-  async function fetchMyBooks(userId) {
-    if (!window.db) return;
-
-    // Fetch transactions for this user
-    const snapshot = await db.collection('borrowTransactions')
-      .where('studentId', '==', userId)
-      .where('status', '==', 'active')
-      .get();
-      
-    // Stub implementation: Since we just seeded books and don't have borrow transactions seeded yet,
-    // this will be empty initially until the user borrows something. 
-    
-    const transactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-    const borrowed = transactions.filter(t => t.transactionType === 'borrow');
-    const purchased = transactions.filter(t => t.transactionType === 'buy');
 
     if (borrowed.length === 0) {
       borrowedGrid.innerHTML = `
         <div style="grid-column:1/-1; padding:var(--space-xl); text-align:center; color:var(--text-muted); background:var(--bg-card); border-radius:var(--radius-md); border:1px dashed var(--border-subtle);">
           You don't have any actively borrowed books right now. <br><br>
-          <a href="library.html" class="btn btn-sm btn-primary">Browse Catalog</a>
+          <a href="/pages/public/library.html" class="btn btn-sm btn-primary">Browse Catalog</a>
         </div>
       `;
     } else {
@@ -60,11 +90,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     for (const t of transactions) {
       try {
-        const bookDoc = await db.collection('books').doc(t.bookId).get();
-        if (bookDoc.exists) {
-          const b = bookDoc.data();
+        let b;
+        if (t.dummyBook) {
+           b = t.dummyBook;
+        } else {
+           const bookDoc = await db.collection('books').doc(t.bookId).get();
+           if (bookDoc.exists) b = bookDoc.data();
+        }
+        
+        if (b) {
           const coverImage = b.coverImage || 'https://via.placeholder.com/150x200?text=No+Cover';
-          const dueDateFormatted = t.dueDate ? t.dueDate.toDate().toLocaleDateString() : 'N/A';
+          const dueDateFormatted = t.dueDate ? new Date(t.dueDate).toLocaleDateString() : 'N/A';
           
           let actionHtml = '';
           if (isBorrowed) {

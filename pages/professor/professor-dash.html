@@ -4,31 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Professor Dashboard – LMS</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
 </head>
 <body>
+  <div id="app-header"></div>
 
-  <nav class="navbar"><div class="container flex-between">
-    <a href="index.html" class="nav-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> LMS</a>
-    <div class="nav-actions">
-      <button class="theme-toggle" aria-label="Toggle theme"><svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
-      <button id="sidebar-toggle" class="btn btn-icon btn-secondary" style="display:none;">☰</button>
-      <button onclick="logout()" class="btn btn-sm btn-outline" style="border-color:#ef4444;color:#ef4444;">Logout</button>
-    </div>
-  </div></nav>
+  
   <!-- Secondary Course Navbar -->
-  <div class="course-navbar animate-up">
-    <div class="container">
-      <nav class="course-nav-links">
-        <a href="#" class="active" data-section="overview">Overview</a>
-        <a href="#" data-section="students">My Students</a>
-        <a href="#" data-section="submissions">Submissions</a>
-        <a href="#" data-section="upload">Upload Material</a>
-        <a href="messages.html" data-section="messages">Messages</a>
-      </nav>
-    </div>
-  </div>
+  
   <div class="dashboard-layout-algoma">
     
 
@@ -52,7 +36,7 @@
               <a href="#" class="stat-dropdown-item"><span>Mathematics 101</span><span class="badge badge-primary">45</span></a>
               <a href="#" class="stat-dropdown-item"><span>English Literature</span><span class="badge badge-primary">38</span></a>
               <a href="#" class="stat-dropdown-item"><span>Physics Advanced</span><span class="badge badge-primary">28</span></a>
-              <a href="courses.html" class="stat-dropdown-item more-link">Manage Courses →</a>
+              <a href="/pages/public/courses.html" class="stat-dropdown-item more-link">Manage Courses →</a>
             </div>
           </div>
 
@@ -177,7 +161,7 @@
                 <label class="form-label">File</label>
                 <div class="file-drop-zone" id="drop-zone">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                  <p>Drag & drop or click to upload</p>
+                  <p>Drag &amp; drop or click to upload</p>
                   <p class="file-limit">Max 10MB · PDF</p>
                   <input type="file" id="upload-file" accept=".pdf" style="display:none;" multiple>
                 </div>
@@ -190,6 +174,49 @@
             </form>
           </div>
         </div>
+
+        <!-- Live Classes Section -->
+        <div class="dash-section animate-up animate-up-3" id="section-live-classes">
+          <div class="dash-section-header"><h3>📅 Schedule a Google Meet Session</h3></div>
+          <div class="grid-2" style="align-items:start;gap:var(--space-xl);">
+            <div class="card" style="padding:var(--space-xl);">
+              <h4 style="margin-bottom:var(--space-md);">New Session</h4>
+              <form id="schedule-class-form">
+                <div class="form-group">
+                  <label class="form-label" for="class-course">Course</label>
+                  <select class="form-select" id="class-course">
+                    <option value="math101">Mathematics 101</option>
+                    <option value="eng200">English Literature</option>
+                    <option value="phy300">Physics Advanced</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="class-title">Session Title</label>
+                  <input type="text" class="form-input" id="class-title" placeholder="e.g., Chapter 5 Review">
+                </div>
+                <div class="grid-2" style="gap:var(--space-md);">
+                  <div class="form-group">
+                    <label class="form-label" for="class-date">Date</label>
+                    <input type="date" class="form-input" id="class-date">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="class-time">Time</label>
+                    <input type="time" class="form-input" id="class-time">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="class-zoom-link">Google Meet Link</label>
+                  <input type="url" class="form-input" id="class-zoom-link" placeholder="https://meet.google.com/abc-defg-hij">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">Schedule Class</button>
+              </form>
+            </div>
+            <div class="dash-section">
+              <div class="dash-section-header"><h3>Upcoming Classes</h3></div>
+              <div id="upcoming-classes-list"><p style="color:var(--text-muted);">Loading...</p></div>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
   </div>
@@ -197,8 +224,85 @@
   <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
-  <script src="js/firebase-config.js"></script>
-  <script src="js/app.js"></script>
-  <script src="js/professor.js"></script>
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/app.js"></script>
+  <script src="/js/professor.js"></script>
+  <script>
+    // Live classes scheduling and list
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('schedule-class-form');
+      if (form) {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const user = getCurrentUser();
+          const course = document.getElementById('class-course').value;
+          const title = document.getElementById('class-title').value.trim();
+          const date = document.getElementById('class-date').value;
+          const time = document.getElementById('class-time').value;
+          const zoomLink = document.getElementById('class-zoom-link').value.trim();
+          if (!title || !date || !time || !zoomLink) {
+            showToast('Please fill all required fields.', 'warning');
+            return;
+          }
+
+          if (!user || user.role !== 'professor') {
+            showToast('You must be logged in as a professor.', 'error');
+            return;
+          }
+
+          try {
+            await db.collection('meetClasses').add({
+              title,
+              course,
+              date,
+              time,
+              zoomLink,
+              meetLink: zoomLink,
+              instructorId: user.uid,
+              instructorName: user.name,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+              status: 'upcoming'
+            });
+            showToast('Class scheduled successfully!', 'success');
+            form.reset();
+            loadUpcomingClasses();
+          } catch(err) {
+            console.error(err);
+            showToast('Failed to schedule class. Please try again.', 'error');
+          }
+        });
+      }
+      loadUpcomingClasses();
+    });
+
+    async function loadUpcomingClasses() {
+      const container = document.getElementById('upcoming-classes-list');
+      if (!container) return;
+      container.innerHTML = '<p style="color:var(--text-muted);">Loading...</p>';
+
+      try {
+        const snap = await db.collection('meetClasses').where('status','==','upcoming').orderBy('date').limit(10).get();
+
+        if (snap.empty) {
+          container.innerHTML = '<p style="color:var(--text-muted);">No upcoming classes scheduled.</p>';
+          return;
+        }
+
+        const classes = snap.docs.map(d => d.data());
+        container.innerHTML = classes.map(c => `
+          <div class="card" style="padding:var(--space-md);margin-bottom:var(--space-sm);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--space-sm);">
+            <div>
+              <span class="badge badge-primary" style="margin-bottom:2px;">${c.course}</span>
+              <p style="font-weight:600;margin:0;">${c.title}</p>
+              <p style="font-size:0.8rem;color:var(--text-muted);margin:0;">${c.date} @ ${c.time}</p>
+            </div>
+            <a href="${c.zoomLink || '#'}" target="_blank" class="btn btn-sm btn-secondary">Start →</a>
+          </div>
+        `).join('');
+      } catch(err) {
+        container.innerHTML = '<p style="color:var(--text-muted);">Failed to load upcoming classes.</p>';
+      }
+    }
+  </script>
 </body>
 </html>

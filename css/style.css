@@ -296,6 +296,9 @@ p {
   display: flex;
   align-items: center;
   gap: 2px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .nav-links a {

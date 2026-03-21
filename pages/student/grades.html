@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grades – LMS</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+  <div id="app-header"></div>
+
+  
+
+  
+
+  <div class="dashboard-layout-algoma">
+    <main class="dashboard-main">
+      <div class="dash-header animate-up">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;width:100%;">
+          <div>
+            <h1>Academic <em class="serif-italic" style="color:var(--primary);">Grades</em></h1>
+            <p style="color:var(--text-secondary);">View detailed grades for all your assignments and exams.</p>
+          </div>
+          <div class="stat-card" style="padding:var(--space-md) var(--space-xl); margin:0;">
+             <div class="stat-info" style="margin:0;"><h4 id="page-gpa-stat">--</h4><div class="stat-label">Overall GPA</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-section animate-up animate-up-1">
+        <div class="card" style="padding:var(--space-xl);">
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Course</th><th>Assignment</th><th>Score</th><th>Grade</th><th>Date</th></tr></thead>
+              <tbody id="detailed-grades-table">
+                <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:var(--space-xl);">Loading detailed grades...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!requireAuth()) return;
+      const user = getCurrentUser();
+      
+      const tbody = document.getElementById('detailed-grades-table');
+      if (!tbody) return;
+
+      try {
+        const snapshot = await db.collection('grades').where('studentId', '==', user.uid).get();
+        if (snapshot.empty) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:var(--space-xl);">No grades found for your courses.</td></tr>';
+          return;
+        }
+
+        let allGrades = snapshot.docs.map(doc => doc.data());
+        allGrades.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+        let html = '';
+        let totalScore = 0;
+        
+        allGrades.forEach(g => {
+          const safeGrade = g.grade || '';
+          const safeTitle = g.courseTitle || 'Course';
+          const gradeClass = safeGrade.startsWith('A') ? 'grade-a' : safeGrade.startsWith('B') ? 'grade-b' : safeGrade.startsWith('C') ? 'grade-c' : 'grade-f';
+          totalScore += g.score || 0;
+          html += `
+            <tr>
+              <td style="font-weight:600;"><span class="badge badge-primary" style="margin-right:8px;font-size:0.75rem;">${safeTitle.split('-')[0].trim()}</span> ${safeTitle}</td>
+              <td>${g.assignment || 'N/A'}</td>
+              <td style="font-family:'Courier New', monospace; font-weight:bold;">${g.score || 0}/100</td>
+              <td class="grade-cell ${gradeClass}">${safeGrade}</td>
+              <td style="color:var(--text-secondary);font-size:0.85rem;">${g.date ? new Date(g.date).toLocaleDateString() : 'N/A'}</td>
+            </tr>
+          `;
+        });
+        tbody.innerHTML = html;
+        
+        // Update GPA Stat
+        const gpaStat = document.getElementById('page-gpa-stat');
+        if (gpaStat && snapshot.size > 0) {
+          const avg = totalScore / snapshot.size;
+          const gpa = (avg / 100) * 4;
+          gpaStat.textContent = gpa.toFixed(1);
+        }
+      } catch(err) {
+        console.error("Error fetching grades:", err);
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:var(--space-xl);">Failed to load grades.</td></tr>';
+      }
+    });
+  </script>
+</body>
+</html>

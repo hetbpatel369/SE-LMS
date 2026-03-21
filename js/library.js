@@ -6,21 +6,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let allBooks = [];
 
+  const DEMO_BOOKS = [
+    { id: 'b1', title: 'The Pragmatic Programmer', author: 'David Thomas', category: 'Software Engineering', buyPrice: 45, borrowPrice: 5, availableCopies: 12, rating: 4.8 },
+    { id: 'b2', title: 'Clean Code', author: 'Robert C. Martin', category: 'Software Engineering', buyPrice: 40, borrowPrice: 4, availableCopies: 8, rating: 4.7 },
+    { id: 'b3', title: 'Introduction to Algorithms', author: 'Thomas H. Cormen', category: 'Computer Science', buyPrice: 85, borrowPrice: 10, availableCopies: 5, rating: 4.9 },
+    { id: 'b4', title: 'A Brief History of Time', author: 'Stephen Hawking', category: 'Science', buyPrice: 15, borrowPrice: 2, availableCopies: 20, rating: 4.8 },
+    { id: 'b5', title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', category: 'Literature', buyPrice: 10, borrowPrice: 1, availableCopies: 0, rating: 4.5 }
+  ];
+
   // Fetch books from Firebase
   async function fetchBooks() {
     try {
-      if (!window.db) {
-        console.error("Firebase DB not initialized.");
-        booksGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--danger);">Database connection error.</div>';
-        return;
-      }
-      
       const snapshot = await db.collection('books').get();
-      allBooks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      allBooks = snapshot.empty ? DEMO_BOOKS : snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       renderBooks();
     } catch (error) {
-      console.error("Error fetching books:", error);
-      booksGrid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--danger);">Failed to load catalog: ${error.message}</div>`;
+      console.warn("Error fetching books (using fallback):", error);
+      allBooks = DEMO_BOOKS;
+      renderBooks();
     }
   }
 
@@ -47,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     booksGrid.innerHTML = filtered.map((b, i) => `
-      <div class="card course-card animate-up animate-up-${(i % 3) + 2}" style="cursor:pointer;" onclick="window.location.href='book-details.html?id=${b.id}'">
+      <div class="card course-card animate-up animate-up-${(i % 3) + 2}" style="cursor:pointer;" onclick="window.location.href = '/pages/public/book-details.html?id=${b.id}'">
         <div style="height: 200px; background: var(--bg-input); border-radius: var(--radius-md) var(--radius-md) 0 0; display:flex; align-items:center; justify-content:center; overflow:hidden;">
           <img src="${b.coverImage || 'https://via.placeholder.com/150x200?text=No+Cover'}" alt="${b.title}" style="max-height: 100%; max-width: 100%; object-fit: contain;">
         </div>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Class recordings from past live Google Meet sessions on the LMS platform.">
+  <title>Class Recordings – LMS</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+  <div id="app-header"></div>
+
+  
+
+  
+
+  <div class="dashboard-layout-algoma">
+    <main class="dashboard-main">
+      <div class="dash-header animate-up">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;width:100%;">
+          <div>
+            <h1>Class <em class="serif-italic" style="color:var(--primary);">Recordings</em></h1>
+            <p style="color:var(--text-secondary);">Missed a session? Watch it back anytime.</p>
+          </div>
+          <a href="/pages/shared/zoom-classes.html" class="btn btn-sm btn-secondary">📅 Upcoming Classes</a>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="card animate-up" style="padding:var(--space-md);margin-bottom:var(--space-xl);display:flex;gap:var(--space-md);flex-wrap:wrap;align-items:center;">
+        <input type="text" class="form-input" id="rec-search" placeholder="Search recordings..." style="flex:1;min-width:200px;padding:10px 16px;">
+        <select class="form-select" id="rec-course-filter" style="width:190px;padding:10px 12px;">
+          <option value="all">All Courses</option>
+          <option value="Mathematics 101">Mathematics 101</option>
+          <option value="English Literature">English Literature</option>
+          <option value="Biology Basics">Biology Basics</option>
+          <option value="Physics Advanced">Physics Advanced</option>
+          <option value="Computer Science">Computer Science</option>
+        </select>
+      </div>
+
+      <div class="dash-section animate-up animate-up-1">
+        <div id="recordings-list">
+          <p style="color:var(--text-muted);">Loading recordings...</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    const DEMO_RECORDINGS = [
+      { id:'r1', title:"Newton's Laws Worked Examples", course:'Physics – Mechanics & Waves', courseId:'c-phys', instructor:'Dr. Alan Smith', date:'2026-03-14', duration:'65 min', views:34, thumbnail:'⚡', playbackUrl:'https://drive.google.com/file/d/demo-recording-1' },
+      { id:'r2', title:'Python: Lists, Dicts & Loops', course:'Computer Science – Intro to Python', courseId:'c-cs', instructor:'Mr. James Chen', date:'2026-03-18', duration:'80 min', views:56, thumbnail:'💻', playbackUrl:'https://drive.google.com/file/d/demo-recording-2' },
+      { id:'r3', title:'Shakespeare: Tragedy & Structure', course:'English Literature 11', courseId:'c-eng', instructor:'Ms. Sarah Johnson', date:'2026-03-17', duration:'55 min', views:27, thumbnail:'📖', playbackUrl:'https://drive.google.com/file/d/demo-recording-3' },
+      { id:'r4', title:'Photosynthesis Deep Dive', course:'Biology – Cells & Genetics', courseId:'c-bio', instructor:'Dr. Rina Patel', date:'2026-03-12', duration:'67 min', views:41, thumbnail:'🌱', playbackUrl:'https://drive.google.com/file/d/demo-recording-4' },
+      { id:'r5', title:'WWI Causes & The Great Powers', course:'World History – Modern Era', courseId:'c-hist', instructor:'Ms. Sarah Johnson', date:'2026-03-10', duration:'58 min', views:22, thumbnail:'🌍', playbackUrl:'https://drive.google.com/file/d/demo-recording-5' },
+    ];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!requireAuth()) return;
+
+      const list = document.getElementById('recordings-list');
+      const searchInput = document.getElementById('rec-search');
+      const courseFilter = document.getElementById('rec-course-filter');
+      let allRecordings = [];
+
+      // Load from Firestore first
+      const user = getCurrentUser();
+      try {
+        let enrolledIds = [];
+        if (user && user.role === 'student') {
+          const cSnap = await db.collection('courses').where('students', 'array-contains', user.uid).get();
+          enrolledIds = cSnap.docs.map(d => d.id);
+        }
+
+        const snap = await db.collection('meetClasses').where('status', '==', 'past').get();
+        allRecordings = snap.empty ? DEMO_RECORDINGS : snap.docs.map(d => ({
+          ...d.data(),
+          thumbnail: { 'c-cs': '💻', 'c-eng': '📖', 'c-bio': '🌱', 'c-phys': '⚡', 'c-hist': '🌍' }[d.data().courseId] || '🎥',
+          playbackUrl: d.data().recordingLink || '#',
+          views: Math.floor(Math.random() * 60) + 10
+        }));
+
+        if (user && user.role === 'student' && enrolledIds.length > 0) {
+           allRecordings = allRecordings.filter(r => enrolledIds.includes(r.courseId));
+        } else if (user && user.role === 'student') {
+           allRecordings = [];
+        }
+        allRecordings.sort((a,b) => new Date(b.date) - new Date(a.date));
+      } catch(e) {
+        console.warn('Fallback to demo recordings:', e);
+        allRecordings = DEMO_RECORDINGS;
+        if (user && user.role === 'student' && enrolledIds && enrolledIds.length > 0) {
+           allRecordings = allRecordings.filter(r => enrolledIds.includes(r.courseId));
+        } else if (user && user.role === 'student') {
+           allRecordings = [];
+        }
+        allRecordings.sort((a,b) => new Date(b.date) - new Date(a.date));
+      }
+
+      function renderRecordings() {
+        const query = searchInput.value.toLowerCase();
+        const courseVal = courseFilter.value;
+        let recs = allRecordings.filter(r => {
+          const matchSearch = r.title.toLowerCase().includes(query) || r.course.toLowerCase().includes(query);
+          const matchCourse = courseVal === 'all' || r.course === courseVal;
+          return matchSearch && matchCourse;
+        });
+
+        if (recs.length === 0) {
+          list.innerHTML = '<p style="color:var(--text-muted);padding:var(--space-lg);">No recordings found for your enrolled subjects.</p>';
+          return;
+        }
+
+        list.innerHTML = recs.map(r => {
+          const dateObj = new Date(r.date + 'T12:00:00');
+          const formattedDate = dateObj.toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
+          return `
+            <div class="card animate-up" style="padding:var(--space-lg);margin-bottom:var(--space-md);display:flex;gap:var(--space-lg);align-items:center;flex-wrap:wrap;">
+              <div style="width:90px;height:70px;border-radius:var(--radius-md);background:linear-gradient(135deg,#1e1e2e,#2d2d44);display:flex;align-items:center;justify-content:center;font-size:2.5rem;flex-shrink:0;position:relative;">
+                ${r.thumbnail || '🎥'}
+                <div style="position:absolute;bottom:4px;right:4px;background:rgba(245,158,11,0.9);border-radius:4px;padding:1px 5px;font-size:0.65rem;color:#000;font-weight:700;">▶ REC</div>
+              </div>
+              <div style="flex:1;">
+                <span class="badge badge-primary" style="margin-bottom:4px;">${r.course}</span>
+                <h4 style="margin-bottom:4px;">${r.title}</h4>
+                <p style="font-size:0.82rem;color:var(--text-muted);">👨‍🏫 ${r.instructor} &nbsp;·&nbsp; ${formattedDate} &nbsp;·&nbsp; ⏱ ${r.duration} &nbsp;·&nbsp; 👁 ${r.views} views</p>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:var(--space-sm);flex-shrink:0;">
+                <a href="${r.playbackUrl}" class="btn btn-sm btn-primary">▶ Watch</a>
+                <a href="${r.playbackUrl}" class="btn btn-sm btn-secondary" download>⬇ Download</a>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      searchInput.addEventListener('input', renderRecordings);
+      courseFilter.addEventListener('change', renderRecordings);
+      renderRecordings();
+    });
+  </script>
+</body>
+</html>

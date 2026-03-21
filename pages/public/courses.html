@@ -5,21 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Browse and enroll in courses on the LMS platform.">
   <title>Courses – LMS</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
 </head>
 <body>
+  <div id="app-header"></div>
 
   <!-- Navbar -->
-  <nav class="navbar"><div class="container flex-between">
-    <a href="index.html" class="nav-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> LMS</a>
-    <div class="nav-links"><a href="index.html">Home</a><a href="about.html">About</a><a href="contact.html">Contact</a></div>
-    <div class="nav-actions">
-      <button class="theme-toggle" aria-label="Toggle theme"><svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
-      <div id="nav-auth"><a href="login.html" class="btn btn-sm btn-secondary">Log In</a><a href="login.html" class="btn btn-sm btn-primary">Sign Up</a></div>
-      <button class="nav-toggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
-    </div>
-  </div></nav>
+  
 
   <main class="page-wrapper">
     <div class="container">
@@ -73,25 +66,46 @@
   <footer class="footer"><div class="container">
     <div class="footer-bottom" style="padding-top:0;border-top:none;">
       <span>&copy; 2026 LMS. All rights reserved.</span>
-      <div><a href="contact.html" style="color:var(--text-on-footer);">Contact</a> &middot; <a href="about.html" style="color:var(--text-on-footer);">About</a> &middot; <a href="privacy.html" style="color:var(--text-on-footer);">Privacy</a></div>
+      <div><a href="/pages/public/contact.html" style="color:var(--text-on-footer);">Contact</a> &middot; <a href="/pages/public/about.html" style="color:var(--text-on-footer);">About</a> &middot; <a href="/pages/public/privacy.html" style="color:var(--text-on-footer);">Privacy</a></div>
     </div>
   </div></footer>
 
   <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
-  <script src="js/firebase-config.js"></script>
-  <script src="js/app.js"></script>
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/app.js"></script>
   <script>
     const ALL_COURSES = [
-      { id:1, title:'Mathematics 101', instructor:'Dr. Smith', price:50, category:'Math', students:45, description:'Fundamentals of algebra, calculus, and geometry for Grade 9-10.', materials:['Chapter 1-5 PDF','Video Lectures','Practice Tests'], schedule:'Mon/Wed 10:00 AM' },
-      { id:2, title:'English Literature', instructor:'Ms. Johnson', price:40, category:'English', students:38, description:'Explore classic and modern literature, essay writing, and critical analysis.', materials:['Reading List','Essay Guides','Discussion Forums'], schedule:'Tue/Thu 2:00 PM' },
-      { id:3, title:'Biology Basics', instructor:'Dr. Patel', price:55, category:'Science', students:52, description:'Introduction to cell biology, genetics, ecology, and human anatomy.', materials:['Lab Manuals','Video Lectures','Quizzes'], schedule:'Wed/Fri 9:00 AM' },
-      { id:4, title:'World History', instructor:'Mr. Brown', price:35, category:'History', students:30, description:'Survey of world civilizations from ancient to modern times.', materials:['Timeline Charts','Reading Materials','Map Exercises'], schedule:'Mon/Thu 1:00 PM' },
-      { id:5, title:'Computer Science', instructor:'Ms. Lee', price:60, category:'Technology', students:61, description:'Introduction to programming, algorithms, and web development basics.', materials:['Coding Exercises','Project Files','Video Tutorials'], schedule:'Thu/Fri 11:00 AM' },
-      { id:6, title:'Physics Advanced', instructor:'Dr. Garcia', price:50, category:'Science', students:28, description:'Mechanics, thermodynamics, and electromagnetism for Grade 11-12.', materials:['Problem Sets','Lab Reports','Formula Sheets'], schedule:'Tue/Fri 10:00 AM' },
-      { id:7, title:'Chemistry 101', instructor:'Dr. Wong', price:45, category:'Science', students:35, description:'Intro to atomic structure, chemical reactions, and stoichiometry.', materials:['Lab Manual','Periodic Table','Practice Problems'], schedule:'Mon/Wed 3:00 PM' },
-      { id:8, title:'Creative Writing', instructor:'Mr. Adams', price:30, category:'English', students:22, description:'Develop narrative, poetry, and script writing skills.', materials:['Writing Prompts','Peer Review Guides'], schedule:'Wed 4:00 PM' },
+      { id:1, title:'Mathematics 101', instructor:'Dr. Smith', price:50, category:'Math', students:45, rating:4.7, duration:'12 Weeks', description:'Fundamentals of algebra, calculus, and geometry for Grade 9-10.', materials:['Chapter 1-5 PDF','Video Lectures','Practice Tests'], schedule:'Mon/Wed 10:00 AM', reviews:[
+        {name:'Alex R.', stars:5, text:'Dr. Smith explains concepts very clearly. Highly recommend!'},
+        {name:'Sarah K.', stars:4, text:'Great course, practice tests really help.'},
+      ]},
+      { id:2, title:'English Literature', instructor:'Ms. Johnson', price:40, category:'English', students:38, rating:4.5, duration:'10 Weeks', description:'Explore classic and modern literature, essay writing, and critical analysis.', materials:['Reading List','Essay Guides','Discussion Forums'], schedule:'Tue/Thu 2:00 PM', reviews:[
+        {name:'Maya L.', stars:5, text:'Changed how I read books. Amazing discussions!'},
+        {name:'Tom W.', stars:4, text:'Lots of writing but very rewarding.'},
+      ]},
+      { id:3, title:'Biology Basics', instructor:'Dr. Patel', price:55, category:'Science', students:52, rating:4.8, duration:'14 Weeks', description:'Introduction to cell biology, genetics, ecology, and human anatomy.', materials:['Lab Manuals','Video Lectures','Quizzes'], schedule:'Wed/Fri 9:00 AM', reviews:[
+        {name:'Chris D.', stars:5, text:'Lab simulations were incredibly detailed!'},
+        {name:'Priya S.', stars:5, text:'Best science course I have taken online.'},
+      ]},
+      { id:4, title:'World History', instructor:'Mr. Brown', price:35, category:'History', students:30, rating:4.4, duration:'8 Weeks', description:'Survey of world civilizations from ancient to modern times.', materials:['Timeline Charts','Reading Materials','Map Exercises'], schedule:'Mon/Thu 1:00 PM', reviews:[
+        {name:'Emma J.', stars:4, text:'Fascinating content covering all major civilizations.'},
+      ]},
+      { id:5, title:'Computer Science', instructor:'Ms. Lee', price:60, category:'Technology', students:61, rating:4.9, duration:'16 Weeks', description:'Introduction to programming, algorithms, and web development basics.', materials:['Coding Exercises','Project Files','Video Tutorials'], schedule:'Thu/Fri 11:00 AM', reviews:[
+        {name:'Jordan M.', stars:5, text:'Built my first app during this course!'},
+        {name:'Riley P.', stars:5, text:'Ms. Lee is an outstanding teacher.'},
+      ]},
+      { id:6, title:'Physics Advanced', instructor:'Dr. Garcia', price:50, category:'Science', students:28, rating:4.6, duration:'12 Weeks', description:'Mechanics, thermodynamics, and electromagnetism for Grade 11-12.', materials:['Problem Sets','Lab Reports','Formula Sheets'], schedule:'Tue/Fri 10:00 AM', reviews:[
+        {name:'Nathan C.', stars:5, text:'Challenging but extremely rewarding!'},
+        {name:'Sofia B.', stars:4, text:'Formula sheets are super helpful.'},
+      ]},
+      { id:7, title:'Chemistry 101', instructor:'Dr. Wong', price:45, category:'Science', students:35, rating:4.5, duration:'10 Weeks', description:'Intro to atomic structure, chemical reactions, and stoichiometry.', materials:['Lab Manual','Periodic Table','Practice Problems'], schedule:'Mon/Wed 3:00 PM', reviews:[
+        {name:'Lily T.', stars:4, text:'Very structured and easy to follow.'},
+      ]},
+      { id:8, title:'Creative Writing', instructor:'Mr. Adams', price:30, category:'English', students:22, rating:4.3, duration:'6 Weeks', description:'Develop narrative, poetry, and script writing skills.', materials:['Writing Prompts','Peer Review Guides'], schedule:'Wed 4:00 PM', reviews:[
+        {name:'Alex B.', stars:4, text:'Great for beginners. Very supportive community.'},
+      ]},
     ];
 
     const colors = ['#4f46e5','#7c3aed','#06b6d4','#0891b2','#059669','#d97706','#dc2626','#ec4899'];
@@ -116,10 +130,11 @@
         <div class="card course-card animate-up animate-up-${(i % 3) + 2}" style="cursor:pointer;" onclick="showCourseDetail(${c.id})">
           <div class="course-card-top">
             <span class="badge badge-primary">${c.category}</span>
-            <span style="font-size:0.78rem;color:var(--text-muted);">${c.students} students</span>
+            <span style="font-size:0.78rem;color:#fbbf24;">★ ${c.rating}</span>
           </div>
           <h3 class="course-card-title">${c.title}</h3>
           <p class="course-card-instructor">${c.instructor}</p>
+          <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:var(--space-sm);">🕐 ${c.duration} &nbsp;·&nbsp; 👥 ${c.students} students</p>
           <div class="card-footer" style="display:flex; justify-content:space-between; align-items:center;">
             <span style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:var(--primary);">$${c.price}</span>
             <span class="btn btn-sm btn-primary">View Info</span>
@@ -140,12 +155,33 @@
       document.getElementById('detail-title').style.fontFamily = "'Cormorant Garamond', serif";
       document.getElementById('detail-title').style.fontSize = "2rem";
       
+      const starsHtml = (rating) => {
+        const full = Math.floor(rating);
+        const half = rating % 1 >= 0.5 ? 1 : 0;
+        const empty = 5 - full - half;
+        return '<span style="color:#fbbf24;font-size:1rem;">' + '★'.repeat(full) + (half ? '½' : '') + '<span style="opacity:0.3;">' + '★'.repeat(empty) + '</span></span> ' + rating;
+      };
+      const reviewsHtml = (course.reviews || []).map(r => `
+        <div style="padding:var(--space-sm) 0;border-bottom:1px solid var(--border);">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-weight:600;font-size:0.85rem;">${r.name}</span>
+            <span style="color:#fbbf24;font-size:0.85rem;">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</span>
+          </div>
+          <p style="font-size:0.82rem;color:var(--text-secondary);margin:0;">${r.text}</p>
+        </div>
+      `).join('');
+
       document.getElementById('detail-body').innerHTML = `
         <div style="margin-bottom:var(--space-lg);">
           <div style="display:flex;gap:var(--space-md);flex-wrap:wrap;margin-bottom:var(--space-md);">
             <span class="badge badge-primary">${course.category}</span>
             <span style="font-size:0.85rem;color:var(--text-secondary);">👨‍🏫 ${course.instructor}</span>
             <span style="font-size:0.85rem;color:var(--text-secondary);">👥 ${course.students} students</span>
+            <span style="font-size:0.85rem;color:var(--text-secondary);">🕐 ${course.duration}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:var(--space-sm);margin-bottom:var(--space-md);">
+            ${starsHtml(course.rating)}
+            <span style="font-size:0.82rem;color:var(--text-muted);">(${(course.reviews||[]).length} reviews)</span>
           </div>
           <p style="margin-bottom:var(--space-md);">${course.description}</p>
           <div style="padding:var(--space-md);background:var(--bg-input);border-radius:var(--radius-md);margin-bottom:var(--space-md);">
@@ -158,16 +194,30 @@
               ${course.materials.map(m => `<li style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:4px;">${m}</li>`).join('')}
             </ul>
           </div>
+          ${course.reviews && course.reviews.length ? `
+          <div style="margin-bottom:var(--space-md);">
+            <h4 style="font-size:0.9rem;margin-bottom:var(--space-sm);">💬 Student Reviews</h4>
+            ${reviewsHtml}
+          </div>` : ''}
           <div style="display:flex;align-items:center;justify-content:space-between;padding:var(--space-md);background:var(--primary-glow);border:1px solid rgba(245,158,11,0.2);border-radius:var(--radius-md);">
             <div>
               <div style="font-size:0.8rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">Tuition</div>
               <div style="font-size:1.8rem;font-weight:700;font-family:'Cormorant Garamond',serif;color:var(--primary); line-height:1;">$${course.price}.00</div>
             </div>
-            <a href="payment.html?course=${course.id}" class="btn btn-primary">Enroll Now</a>
+            <button class="btn btn-primary" onclick="handleEnroll(${course.id})">Enroll Now</button>
           </div>
         </div>
       `;
       openModal('course-detail-modal');
+    }
+
+    function handleEnroll(courseId) {
+      const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+      if (!user) {
+        window.location.href = '/pages/public/login.html';
+      } else {
+        window.location.href = `payment.html?course=${courseId}`;
+      }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
