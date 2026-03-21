@@ -1,0 +1,98 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function roleOf(uid) {
+      return get(/databases/$(database)/documents/users/$(uid)).data.role;
+    }
+
+    function isAdmin() {
+      return signedIn() && roleOf(request.auth.uid) == 'admin';
+    }
+
+    function isProfessor() {
+      return signedIn() && roleOf(request.auth.uid) == 'professor';
+    }
+
+    function isParent() {
+      return signedIn() && roleOf(request.auth.uid) == 'parent';
+    }
+
+    match /users/{uid} {
+      allow read: if isOwner(uid) || isAdmin() || isProfessor() || isParent();
+      allow create: if isOwner(uid) || isAdmin();
+      allow update: if isOwner(uid) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /courses/{courseId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /books/{bookId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /events/{eventId} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+
+    match /meetClasses/{meetId} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+
+    match /grades/{gradeId} {
+      allow read: if signedIn() && (
+        resource.data.studentId == request.auth.uid ||
+        isAdmin() ||
+        isProfessor() ||
+        isParent()
+      );
+      allow write: if isAdmin() || isProfessor();
+    }
+
+    match /submissions/{submissionId} {
+      allow read: if signedIn();
+      allow create: if signedIn();
+      allow update, delete: if isAdmin() || isProfessor();
+    }
+
+    match /borrows/{borrowId} {
+      allow read: if signedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    match /purchases/{purchaseId} {
+      allow read: if signedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    match /bookReviews/{reviewId} {
+      allow read: if true;
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid);
+    }
+
+    match /contacts/{uid} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

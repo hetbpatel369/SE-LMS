@@ -1,0 +1,23 @@
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      ".firebaserc",
+      "**/.*",
+      "**/node_modules/**",
+      "CREDENTIALS.md",
+      "TODO.md"
+    ],
+    "redirects": [
+      {
+        "source": "/",
+        "destination": "/pages/public/index.html",
+        "type": 302
+      }
+    ]
+  }
+}
