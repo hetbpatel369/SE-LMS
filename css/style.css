@@ -202,6 +202,10 @@ p {
   padding-bottom: var(--space-3xl);
 }
 
+.page-wrapper.has-course-nav {
+  padding-top: calc(var(--nav-height) + 80px);
+}
+
 .section { padding: var(--space-3xl) 0; }
 
 .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-lg); }
