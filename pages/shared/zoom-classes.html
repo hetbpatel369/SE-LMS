@@ -67,14 +67,14 @@
     ];
 
     document.addEventListener('DOMContentLoaded', async () => {
-      if (!requireAuth()) return;
+      const user = await waitForAuth();
+      if (!user) { window.location.href = '/pages/public/login.html'; return; }
 
       const list = document.getElementById('classes-list');
       const filterSelect = document.getElementById('filter-course');
       let allClasses = [];
 
       // Try loading from Firestore first
-      const user = getCurrentUser();
       try {
         let enrolledIds = [];
         if (user && user.role === 'student') {

@@ -50,8 +50,12 @@
   <script src="/js/app.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
-      if (!requireAuth()) return;
-      const user = getCurrentUser();
+      // Wait for Firebase Auth to restore session before checking access
+      const user = await waitForAuth();
+      if (!user) {
+        window.location.href = '/pages/public/login.html';
+        return;
+      }
       
       const tbody = document.getElementById('detailed-grades-table');
       if (!tbody) return;

@@ -63,7 +63,8 @@
     ];
 
     document.addEventListener('DOMContentLoaded', async () => {
-      if (!requireAuth()) return;
+      const user = await waitForAuth();
+      if (!user) { window.location.href = '/pages/public/login.html'; return; }
 
       const list = document.getElementById('recordings-list');
       const searchInput = document.getElementById('rec-search');
@@ -71,7 +72,6 @@
       let allRecordings = [];
 
       // Load from Firestore first
-      const user = getCurrentUser();
       try {
         let enrolledIds = [];
         if (user && user.role === 'student') {

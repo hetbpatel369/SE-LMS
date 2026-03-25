@@ -55,15 +55,16 @@
     let LMS_MESSAGES = {};
     let currentContact = null;
 
-    document.addEventListener('DOMContentLoaded', () => {
-      auth.onAuthStateChanged(user => {
-        if (!user) {
-          window.location.href = '/pages/public/login.html';
-          return;
-        }
-        currentUser = user;
-        loadContacts();
-      });
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Wait for Firebase Auth to restore session before proceeding
+      const authUser = await waitForAuth();
+      if (!authUser) {
+        window.location.href = '/pages/public/login.html';
+        return;
+      }
+      // Set currentUser from the Firebase auth object for message queries
+      currentUser = auth.currentUser;
+      loadContacts();
 
       document.getElementById('send-btn').addEventListener('click', sendMessage);
       document.getElementById('message-input').addEventListener('keypress', (e) => {

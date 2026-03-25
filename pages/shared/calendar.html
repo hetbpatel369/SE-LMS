@@ -175,12 +175,14 @@
       }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      // Access Control
-      if (!requireAuth()) return;
-
-      const user = getCurrentUser();
-      const uid = user ? user.uid : null;
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Wait for Firebase Auth to restore session before checking access
+      const user = await waitForAuth();
+      if (!user) {
+        window.location.href = '/pages/public/login.html';
+        return;
+      }
+      const uid = user.uid;
 
       async function loadEnrolledCourses() {
         if (!uid || !window.db) return [];

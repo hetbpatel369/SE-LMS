@@ -1,0 +1,132 @@
+diff --git a/pages/shared/calendar.html b/pages/shared/calendar.html
+index afb8a31..12024ac 100644
+--- a/pages/shared/calendar.html
++++ b/pages/shared/calendar.html
+@@ -175,12 +175,14 @@
+       }
+     }
+ 
+-    document.addEventListener('DOMContentLoaded', () => {
+-      // Access Control
+-      if (!requireAuth()) return;
+-
+-      const user = getCurrentUser();
+-      const uid = user ? user.uid : null;
++    document.addEventListener('DOMContentLoaded', async () => {
++      // Wait for Firebase Auth to restore session before checking access
++      const user = await waitForAuth();
++      if (!user) {
++        window.location.href = '/pages/public/login.html';
++        return;
++      }
++      const uid = user.uid;
+ 
+       async function loadEnrolledCourses() {
+         if (!uid || !window.db) return [];
+diff --git a/pages/shared/class-recordings.html b/pages/shared/class-recordings.html
+index e1af5bf..4425ab1 100644
+--- a/pages/shared/class-recordings.html
++++ b/pages/shared/class-recordings.html
+@@ -63,7 +63,8 @@
+     ];
+ 
+     document.addEventListener('DOMContentLoaded', async () => {
+-      if (!requireAuth()) return;
++      const user = await waitForAuth();
++      if (!user) { window.location.href = '/pages/public/login.html'; return; }
+ 
+       const list = document.getElementById('recordings-list');
+       const searchInput = document.getElementById('rec-search');
+@@ -71,7 +72,6 @@
+       let allRecordings = [];
+ 
+       // Load from Firestore first
+-      const user = getCurrentUser();
+       try {
+         let enrolledIds = [];
+         if (user && user.role === 'student') {
+diff --git a/pages/shared/messages.html b/pages/shared/messages.html
+index 585c218..c9fa8f3 100644
+--- a/pages/shared/messages.html
++++ b/pages/shared/messages.html
+@@ -55,15 +55,16 @@
+     let LMS_MESSAGES = {};
+     let currentContact = null;
+ 
+-    document.addEventListener('DOMContentLoaded', () => {
+-      auth.onAuthStateChanged(user => {
+-        if (!user) {
+-          window.location.href = '/pages/public/login.html';
+-          return;
+-        }
+-        currentUser = user;
+-        loadContacts();
+-      });
++    document.addEventListener('DOMContentLoaded', async () => {
++      // Wait for Firebase Auth to restore session before proceeding
++      const authUser = await waitForAuth();
++      if (!authUser) {
++        window.location.href = '/pages/public/login.html';
++        return;
++      }
++      // Set currentUser from the Firebase auth object for message queries
++      currentUser = auth.currentUser;
++      loadContacts();
+ 
+       document.getElementById('send-btn').addEventListener('click', sendMessage);
+       document.getElementById('message-input').addEventListener('keypress', (e) => {
+diff --git a/pages/shared/zoom-classes.html b/pages/shared/zoom-classes.html
+index cdef5f0..ee24894 100644
+--- a/pages/shared/zoom-classes.html
++++ b/pages/shared/zoom-classes.html
+@@ -67,14 +67,14 @@
+     ];
+ 
+     document.addEventListener('DOMContentLoaded', async () => {
+-      if (!requireAuth()) return;
++      const user = await waitForAuth();
++      if (!user) { window.location.href = '/pages/public/login.html'; return; }
+ 
+       const list = document.getElementById('classes-list');
+       const filterSelect = document.getElementById('filter-course');
+       let allClasses = [];
+ 
+       // Try loading from Firestore first
+-      const user = getCurrentUser();
+       try {
+         let enrolledIds = [];
+         if (user && user.role === 'student') {
+diff --git a/pages/student/grades.html b/pages/student/grades.html
+index 9e7ad5a..c27c07a 100644
+--- a/pages/student/grades.html
++++ b/pages/student/grades.html
+@@ -50,8 +50,12 @@
+   <script src="/js/app.js"></script>
+   <script>
+     document.addEventListener('DOMContentLoaded', async () => {
+-      if (!requireAuth()) return;
+-      const user = getCurrentUser();
++      // Wait for Firebase Auth to restore session before checking access
++      const user = await waitForAuth();
++      if (!user) {
++        window.location.href = '/pages/public/login.html';
++        return;
++      }
+       
+       const tbody = document.getElementById('detailed-grades-table');
+       if (!tbody) return;
+diff --git a/pages/student/profile.html b/pages/student/profile.html
+index ea18ff9..02b9923 100644
+--- a/pages/student/profile.html
++++ b/pages/student/profile.html
+@@ -67,8 +67,8 @@
+   <script src="/js/app.js"></script>
+   <script>
+     document.addEventListener('DOMContentLoaded', async () => {
+-      if (!requireAuth()) return;
+-      const user = getCurrentUser();
++      const user = await waitForAuth();
++      if (!user) { window.location.href = '/pages/public/login.html'; return; }
+       
+       document.getElementById('profile-name').textContent = user.name;
+       document.getElementById('profile-role').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
