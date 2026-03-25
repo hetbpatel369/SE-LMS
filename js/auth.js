@@ -9,14 +9,33 @@
 // ==========================================
 // Initialize Auth Page
 // ==========================================
-document.addEventListener('DOMContentLoaded', async () => {
-  // Redirect if already logged in (wait for Firebase to restore session)
-  const existingUser = await waitForAuth();
-  if (existingUser) {
-    redirectToDashboard(existingUser.role);
-    return;
-  }
+document.addEventListener('DOMContentLoaded', () => {
+  // Set up login UI immediately while we wait for auth state
+  setupLoginUI();
 
+  // Then check if user is already logged in (async — won't block UI)
+  if (typeof auth !== 'undefined' && auth) {
+    auth.onAuthStateChanged(async (firebaseUser) => {
+      if (!firebaseUser) return; // Not logged in — login form is already visible
+      try {
+        const userDoc = await db.collection('users').doc(firebaseUser.uid).get();
+        if (userDoc.exists) {
+          const userData = userDoc.data();
+          if (userData.role && userData.status !== 'pending') {
+            lmsCurrentUser = { uid: firebaseUser.uid, ...userData };
+            redirectToDashboard(userData.role);
+          }
+        }
+        // If doc doesn't exist or has no role, just stay on login page
+      } catch (e) {
+        console.warn('Could not check existing session, showing login form.', e);
+        // Firestore error — just show login form, don't guess the role
+      }
+    });
+  }
+});
+
+function setupLoginUI() {
   // Tab switching
   const loginTab = document.getElementById('login-tab');
   const registerTab = document.getElementById('register-tab');
@@ -63,7 +82,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (forgotForm) {
     forgotForm.addEventListener('submit', handleForgotPassword);
   }
-});
+}
 
 // ==========================================
 // Handle Login
