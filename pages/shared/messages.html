@@ -84,11 +84,11 @@
 
         let allowedMap = new Set();
         
-        const allUsersSnap = await db.collection('users').get();
-        const allUsers = [];
-        allUsersSnap.forEach(d => allUsers.push({ id: d.id, ...d.data() }));
+        const allContactsSnap = await db.collection('contacts').get();
+        const allContacts = [];
+        allContactsSnap.forEach(d => allContacts.push({ id: d.id, ...d.data() }));
 
-        allUsers.forEach(u => {
+        allContacts.forEach(u => {
            if (u.role === 'admin') allowedMap.add(u.id);
         });
 
@@ -118,17 +118,23 @@
                studs.forEach(s => allowedMap.add(s));
            });
            
-           for (const uid of Array.from(allowedMap)) {
-               const sDoc = allUsers.find(x => x.id === uid);
-               if (sDoc && sDoc.parentId) allowedMap.add(sDoc.parentId);
+           // Fetch parent IDs for the allowed students
+           const studentsArray = Array.from(allowedMap);
+           for (const uid of studentsArray) {
+               try {
+                   const sDocSnap = await db.collection('users').doc(uid).get();
+                   if (sDocSnap.exists && sDocSnap.data().parentId) {
+                       allowedMap.add(sDocSnap.data().parentId);
+                   }
+               } catch(e) { console.error(e); }
            }
         }
         else if (myRole === 'admin') {
-           allUsers.forEach(u => allowedMap.add(u.id));
+           allContacts.forEach(u => allowedMap.add(u.id));
         }
 
         LMS_CONTACTS = [];
-        allUsers.forEach(data => {
+        allContacts.forEach(data => {
           if (data.id !== myUid && allowedMap.has(data.id)) {
             LMS_CONTACTS.push({
               id: data.id,
