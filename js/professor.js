@@ -4,8 +4,8 @@
 
 let PROF_SUBMISSIONS = []; // Will be loaded from Firestore
 
-document.addEventListener('DOMContentLoaded', () => {
-  const user = getCurrentUser();
+document.addEventListener('DOMContentLoaded', async () => {
+  const user = await waitForAuth();
   if (!user || user.role !== 'professor') {
     window.location.href = '/pages/public/login.html';
     return;

@@ -3,9 +3,9 @@
    Populates dashboard with demo or Firebase data
    ============================================ */
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Check auth
-  const user = getCurrentUser();
+document.addEventListener('DOMContentLoaded', async () => {
+  // Wait for Firebase Auth to restore the session before checking role
+  const user = await waitForAuth();
   if (!user || user.role !== 'student') {
     window.location.href = '/pages/public/login.html';
     return;

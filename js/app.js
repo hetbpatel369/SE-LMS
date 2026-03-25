@@ -437,6 +437,59 @@ function formatTime(date) {
 // ==========================================
 let lmsCurrentUser = null;
 
+/**
+ * Returns a promise that resolves with the current user once Firebase Auth
+ * has finished restoring the session. Use this instead of getCurrentUser()
+ * in DOMContentLoaded handlers to avoid the race condition where
+ * auth.currentUser is still null.
+ */
+function waitForAuth(timeoutMs = 5000) {
+  return new Promise((resolve) => {
+    // If we already have a cached user, return immediately
+    if (lmsCurrentUser) { resolve(lmsCurrentUser); return; }
+
+    // If auth isn't available yet, wait a bit for firebase-config.js
+    if (typeof auth === 'undefined' || !auth) {
+      resolve(null);
+      return;
+    }
+
+    let settled = false;
+    const timer = setTimeout(() => {
+      if (!settled) { settled = true; resolve(lmsCurrentUser || null); }
+    }, timeoutMs);
+
+    auth.onAuthStateChanged(async (firebaseUser) => {
+      if (settled) return;
+      if (!firebaseUser) {
+        settled = true; clearTimeout(timer); resolve(null); return;
+      }
+      try {
+        const userDoc = await db.collection('users').doc(firebaseUser.uid).get();
+        if (userDoc.exists) {
+          lmsCurrentUser = { uid: firebaseUser.uid, ...userDoc.data() };
+        } else {
+          lmsCurrentUser = {
+            uid: firebaseUser.uid,
+            email: firebaseUser.email || '',
+            name: firebaseUser.displayName || firebaseUser.email || 'User',
+            role: inferRoleFromPath() || 'student'
+          };
+        }
+      } catch (err) {
+        console.error('waitForAuth: error fetching user doc', err);
+        lmsCurrentUser = {
+          uid: firebaseUser.uid,
+          email: firebaseUser.email || '',
+          name: firebaseUser.displayName || firebaseUser.email || 'User',
+          role: inferRoleFromPath() || 'student'
+        };
+      }
+      settled = true; clearTimeout(timer); resolve(lmsCurrentUser);
+    });
+  });
+}
+
 function inferRoleFromPath() {
   const path = window.location.pathname;
   if (path.includes('/pages/admin/')) return 'admin';

@@ -16,8 +16,8 @@ window.resetStudentPassword = function(email) {
 
 let PARENT_BILLING = [];
 
-document.addEventListener('DOMContentLoaded', () => {
-  const user = getCurrentUser();
+document.addEventListener('DOMContentLoaded', async () => {
+  const user = await waitForAuth();
   if (!user || user.role !== 'parent') {
     window.location.href = '/pages/public/login.html';
     return;

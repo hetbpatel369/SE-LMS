@@ -20,6 +20,8 @@ let app, auth, db, storage;
 
 function initFirebase() {
   if (typeof firebase !== 'undefined') {
+    // Prevent double-init
+    if (app) return true;
     app = firebase.initializeApp(firebaseConfig);
     auth = firebase.auth();
     db = firebase.firestore();
@@ -33,9 +35,8 @@ function initFirebase() {
   return false;
 }
 
-// Check if Firebase is available; if not, use demo mode
-let firebaseReady = false;
-
-document.addEventListener('DOMContentLoaded', () => {
-  firebaseReady = initFirebase();
-});
+// Initialize Firebase IMMEDIATELY at parse time so that auth, db, etc.
+// are available before any DOMContentLoaded handlers in other scripts run.
+// The Firebase SDK <script> tags are loaded synchronously before this file,
+// so `firebase` global is guaranteed to exist here.
+let firebaseReady = initFirebase();

@@ -9,11 +9,11 @@
 // ==========================================
 // Initialize Auth Page
 // ==========================================
-document.addEventListener('DOMContentLoaded', () => {
-  // Redirect if already logged in
-  if (isLoggedIn()) {
-    const user = getCurrentUser();
-    redirectToDashboard(user.role);
+document.addEventListener('DOMContentLoaded', async () => {
+  // Redirect if already logged in (wait for Firebase to restore session)
+  const existingUser = await waitForAuth();
+  if (existingUser) {
+    redirectToDashboard(existingUser.role);
     return;
   }
 
@@ -117,6 +117,11 @@ async function handleLogin(e) {
     }
 
     const user = { uid: credential.user.uid, ...userData };
+
+    // Cache the user globally so dashboard auth checks see the user
+    // immediately on page load (before onAuthStateChanged fires).
+    lmsCurrentUser = user;
+
     showToast('Login successful!', 'success');
     setTimeout(() => redirectToDashboard(user.role), 500);
   }
